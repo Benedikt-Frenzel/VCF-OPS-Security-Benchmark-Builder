@@ -50,6 +50,7 @@ Open `index.html` in a browser, or host the folder on any static file host.
 | Path | Description |
 | --- | --- |
 | `index.html` | The complete single-page app (UI + XML generation, Clarity Design based) |
+| `assets/vendor/` | Self-hosted Clarity assets, versions pinned in the directory names (see [Design system](#design-system)) |
 | `data/decision-matrix.csv` | Scrubbed rule source |
 | `rules.js` | Generated rule data (144 rules) |
 | `tools/build_rules.py` | Regenerates `rules.js` from the decision matrix CSV |
@@ -60,10 +61,36 @@ Regenerate the rule data after the underlying rule source changes:
 python3 tools/build_rules.py --csv data/decision-matrix.csv --out rules.js
 ```
 
+## Design system
+
+The UI is styled with the [Clarity Design](https://clarity.design/) legacy CSS distribution
+(`@clr/ui` 18.2.1) plus the **Clarity City** typeface (`@cds/city` 1.1.0).
+
+`@clr/ui` was chosen deliberately: it is a **CSS-only** style layer over plain HTML
+(`header`, `card`, `table`, `btn`, `clr-checkbox-wrapper`, …), so it needs **no JavaScript
+runtime and no web-component polyfills** — a hard requirement for a dependency-free static
+page that must work by just opening `index.html`. The current Clarity recommendation,
+[CDS web components](https://clarity.design/get-started/developing/core/customization/) (`@cds/core`),
+was considered and **rejected** for this project: it ships a component runtime
+(custom elements + lit-html) that would add load-time script dependencies to an otherwise
+JS-free markup layer.
+
+All Clarity assets are **vendored** under `assets/vendor/` (no CDN requests at runtime,
+works fully offline, immune to CDN outages or tampering):
+
+| Vendored path | Upstream package | Contents |
+| --- | --- | --- |
+| `assets/vendor/clr-ui-18.2.1/clr-ui.min.css` | `@clr/ui@18.2.1` | Compiled Clarity CSS (SVGs inlined as `data:` URIs) |
+| `assets/vendor/city-1.1.0/city.css` | `@cds/city@1.1.0` | `@font-face` rules, URLs rewritten to the local `fonts/` directory |
+| `assets/vendor/city-1.1.0/fonts/*.woff2` | `@cds/city@1.1.0` | Clarity City Light/Regular/Medium/SemiBold (`.woff2`) |
+
+Versions are pinned by the directory names; upgrading means re-vendoring from jsdelivr and
+bumping the paths in `index.html`.
+
 ## Tech notes
 
-- UI styled with [Clarity Design](https://clarity.design/) (`@clr/ui` CSS and the Clarity City
-  typeface, loaded from CDN).
+- UI styled with vendored Clarity Design CSS (see [Design system](#design-system) above for the
+  variant decision and pinned versions).
 - Generated symptom IDs follow the pattern `SymptomDefinition-<prefix>-<slug>` and alert IDs
   `AlertDefinition-<prefix>-<RESOURCEKIND>`; the prefix is configurable (default `VCF-SEC`).
 - Adapter kinds and remediation recommendations per resource kind mirror the baseline files in

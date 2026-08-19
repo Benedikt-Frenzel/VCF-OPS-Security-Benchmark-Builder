@@ -1,0 +1,4 @@
+/* @cds/city 1.1.0 (Clarity City typeface) - css/bundles/default.min.css
+   Vendored from https://cdn.jsdelivr.net/npm/@cds/city@1.1.0/css/bundles/default.min.css
+   Font URLs rewritten to local .woff2 files under fonts/ (WOFF fallbacks dropped). */
+@font-face{font-family:'Clarity City';font-weight:300;font-style:normal;font-display:swap;src:local('Clarity City'),url(fonts/ClarityCity-Light.woff2) format('woff2')}@font-face{font-family:'Clarity City';font-weight:400;font-style:normal;font-display:swap;src:local('Clarity City'),url(fonts/ClarityCity-Regular.woff2) format('woff2')}@font-face{font-family:'Clarity City';font-weight:500;font-style:normal;font-display:swap;src:local('Clarity City'),url(fonts/ClarityCity-Medium.woff2) format('woff2')}@font-face{font-family:'Clarity City';font-weight:600;font-style:normal;font-display:swap;src:local('Clarity City'),url(fonts/ClarityCity-SemiBold.woff2) format('woff2')}
