@@ -54,6 +54,8 @@ Open `index.html` in a browser, or host the folder on any static file host.
 | `rules.js` | Generated rule data (144 rules) |
 | `tools/build_rules.py` | Regenerates `rules.js` from the decision matrix CSV |
 | `tools/compare_baseline.py` | Regression check of the generated defaults against the baseline export |
+| `tools/extract_baseline_conditions.py` | Refreshes `test/fixtures/baseline-conditions.json` from the baseline export |
+| `test/` | Python unit + baseline regression tests and jsdom page tests |
 
 Regenerate the rule data after the underlying rule source changes:
 
@@ -86,6 +88,32 @@ python3 tools/compare_baseline.py
 The tool reports operator/value/type alignment for every shared condition key
 and exits non-zero on any mismatch that is not a documented deviation, so it
 can be used as a CI regression test.
+
+## Testing
+
+CI (`.github/workflows/ci.yml`) runs on every push and pull request:
+
+- **python** – `python3 -m unittest discover -s test` runs the unit tests for
+  `tools/build_rules.py` (operator inversion, `vmx-*` regexes, condition/value
+  types, aliases, timeouts, `contains`, the German-token guard, stable IDs) and
+  the baseline regression test, which compares the rules derived from
+  `data/decision-matrix.csv` against the committed fixture
+  `test/fixtures/baseline-conditions.json` (extracted from the baseline export,
+  so CI does not need the sibling repository). A freshness check also proves
+  that the committed `rules.js` matches what `tools/build_rules.py` regenerates.
+- **node** – `npm ci && node --test` runs the jsdom page tests in `test/`
+  (renders the 144-rule table, exercises include/operator/value overrides via
+  real DOM events, and validates the generated XML).
+
+Locally:
+
+```bash
+python3 -m unittest discover -s test -v   # Python tests
+npm install && npm test                    # jsdom page tests
+```
+
+When the baseline export in the sibling repository changes, refresh the
+committed fixture with `python3 tools/extract_baseline_conditions.py`.
 
 ## Tech notes
 
