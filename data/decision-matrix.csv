@@ -1,4 +1,4 @@
-resource,scg_id,description,condition_key,iso_27001,scg_6.x,scg_7,scg_8,vsan_hg,nsx-t_scg,(kein_alert),strictest_requirement,note
+resource,scg_id,description,condition_key,iso_27001,scg_6.x,scg_7,scg_8,vsan_hg,nsx-t_scg,no_alert,strictest_requirement,note
 ManagementService,–,Management Service's 'Client API Concurrency Limit' is not set to recommended value.,ComplianceMetrics|APILimits|Client_API_Concurrency_Limit,,,,,,,= 40.0,= 40.0,
 ManagementService,–,Management Service's 'Client API Rate Limit' is not set to recommended value.,ComplianceMetrics|APILimits|Client_API_Rate_Limit,,,,,,,= 100.0,= 100.0,
 ManagementService,–,"Management Service ""http"" have session_timeout set to non-recommended value.",ComplianceMetrics|HttpSessionTimeOut,,,,,,,= 1800.0,= 1800.0,
@@ -50,7 +50,7 @@ VirtualMachine,VM.Deactivate-unexposed-features-trayicon,Tray icon feature is ac
 VirtualMachine,VM.Deactivate-unexposed-features-unity,Unity feature is activated,config|security|disable_unexposed_features_unity,≠ false,≠ false,≠ false,,,,,≠ false,
 VirtualMachine,VM.Deactivate-unexposed-features-unity-interlock,Unity Interlock is activated,config|security|disable_unexposed_features_unity_interlock,≠ false,≠ false,≠ false,,,,,≠ false,
 VirtualMachine,VM.Deactivate-unexposed-features-unity-taskbar,Unity taskbar feature is activated,config|security|disable_unexposed_features_unity_taskbar,≠ false,≠ false,≠ false,,,,,≠ false,
-VirtualMachine,VM.Deactivate-unexposed-features-unity-unityactive,Unity feature is activated,config|security|disable_unexposed_features_unity_unityactive,≠ false,= true,= none,,,,,false / nicht gesetzt,Export contains contradictory conditions; conservative choice: Unity not active.
+VirtualMachine,VM.Deactivate-unexposed-features-unity-unityactive,Unity feature is activated,config|security|disable_unexposed_features_unity_unityactive,≠ false,= true,= none,,,,,false / not set,Export contains contradictory conditions; conservative choice: Unity not active.
 VirtualMachine,VM.Deactivate-unexposed-features-unity-windowcontents,Unity window contents is activated,config|security|disable_unexposed_features_unity_windowcontents,≠ false,≠ false,≠ false,,,,,≠ false,
 VirtualMachine,VM.Deactivate-unexposed-features-unitypush,Unity push feature is activated,config|security|disable_unexposed_features_unitypush,≠ false,≠ false,≠ false,,,,,≠ false,
 VirtualMachine,VM.Deactivate-unexposed-features-versionget,version get feature is activated,config|security|disable_unexposed_features_versionget,≠ false,≠ false,≠ false,≠ false,,,,≠ false,
@@ -100,7 +100,7 @@ HostSystem,–,ESXi.set-security-password-history - The Password reuse history c
 HostSystem,ESXi.set-password-policies,Password policy is not established for password complexity,config|security|security_password_quality_control,"= retry=3 min=disabled,disabled,disabled,7,7","= retry=3 min=disabled,disabled,disabled,7,7","= retry=3 min=disabled,disabled,disabled,7,7","= retry=3 min=disabled,15,15,15,15 max=64 similar=deny passphrase=3",,,,"retry=3 min=disabled,15,15,15,15 max=64 similar=deny passphrase=3",SCG 8 (15 characters + passphrase) is stricter than ISO/6.x (7 characters).
 HostSystem,–,ESXi Shell service is running,config|security|service:ESXi Shell|isRunning,,,≠ true,≠ true,,,,≠ true,
 HostSystem,–,Non-compliant ESXi Shell service startup policy,config|security|service:ESXi Shell|policy,,,= off,= off,,,,= off,
-HostSystem,–,ISO 27001-27002 NTP time Synchronization service is not configured to start automatically,config|security|service:NTP Daemon|isRunning,≠ false / ≠ none,≠ false,,,,,,läuft,'false'/'none' are collector variants of the same condition.
+HostSystem,–,ISO 27001-27002 NTP time Synchronization service is not configured to start automatically,config|security|service:NTP Daemon|isRunning,≠ false / ≠ none,≠ false,,,,,,running,'false'/'none' are collector variants of the same condition.
 HostSystem,–,ESXi.config-ntp - NTP Daemon policy is not enabled,config|security|service:NTP Daemon|policy,,= on,,,,,,= on,
 HostSystem,–,ESXi.set-cimsfcb-watchdog-svc-stop -  The SFCBD Watch dog service is running,config|security|service:SFCB service|isRunning,,,≠ true,≠ true,,,,≠ true,
 HostSystem,–,ESXi.set-cimsfcb-watchdog-policy-off  - The SFCBD Watch dog service policy is On,config|security|service:SFCB service|policy,,,≠ on,≠ on,,,,≠ on,
@@ -115,13 +115,13 @@ HostSystem,ESXi.set-shell-timeout,Timeout for ESXi Shell and SSH services is set
 HostSystem,–,ESXi.set-hyperthread-security-warning - Warning for potential hyperthreading security vulnerability is suppressed,config|security|suppressHyperthreadWarning,,,= 0.0,= 0.0,,,,= 0.0,
 HostSystem,–,ESXi.set-shell-warning-enabled - Warning for support and troubleshooting interfaces is suppressed,config|security|suppressShellWarning,,,= 0.0,= 0.0,,,,= 0.0,
 HostSystem,–,ISO 27001-27002 - Persistent logging is not configured for ESXi host,config|security|syslog_dir,≠ false,≠ false,≠ false,≠ false,,,,≠ false,
-HostSystem,–,ISO 27001-27002 Remote Logging for ESXI must be configured,config|security|syslog_host,≠ false,≠ none,≠ none,≠ none,,,,konfiguriert,Remote syslog must be configured.
+HostSystem,–,ISO 27001-27002 Remote Logging for ESXI must be configured,config|security|syslog_host,≠ false,≠ none,≠ none,≠ none,,,,configured,Remote syslog must be configured.
 HostSystem,–,ESXi.set-disable-deprecated-ssl-tls - Deactivate deprecated SSL or TLS protocols,config|security|tlsDisabledProtocols,,,"= sslv3,tlsv1,tlsv1.1","= sslv3,tlsv1,tlsv1.1",,,,"= sslv3,tlsv1,tlsv1.1",
 VirtualMachine,–,VM.set-guest-session-locked - The console session is not locked,config|security|tools_guest_desktop_autolock,,,≠ false,≠ false,,,,≠ false,
 HostSystem,–,ISO 27001-27002 - The default setting for intra-VM TPS is not correct,config|security|tps_share_force_salting,= 2.0,= 2.0,= 2.0,= 2.0,,,,= 2.0,
 HostSystem,–,The welcome message is not set,config|security|welcome_message,,,,≠ false,,,,≠ false,
 DistributedVirtualPortgroup,–,vSphere Distributed Port Group is not an uplink,config|uplink,= true,,= true,= true,,,,= true,
-VirtualMachine,–,VM.set-virtual-hardware - The virtual machine hardware version not as per the recommended version,config|version,,,nicht gemäß Regex: vmx-[1-9]|vmx-1[0-2],nicht gemäß Regex: vmx-[1-9]|vmx-1[0-8],,,,vmx-19+,SCG 7 flags <=vmx-12 and SCG 8 flags <=vmx-18 as violations -> strictest requirement: hardware version >= vmx-19.
+VirtualMachine,–,VM.set-virtual-hardware - The virtual machine hardware version not as per the recommended version,config|version,,,not matching regex: vmx-[1-9]|vmx-1[0-2],not matching regex: vmx-[1-9]|vmx-1[0-8],,,,vmx-19+,SCG 7 flags <=vmx-12 and SCG 8 flags <=vmx-18 as violations -> strictest requirement: hardware version >= vmx-19.
 HostSystem,–,vSAN encryption is not enabled on ESXi host.,config|vsan|encryption,,,,,,,= Enabled,= Enabled,
 ManagementService,–,NTP Service is not configured properly,security|NtpServersCount,,,,,,,≥ 3.0,≥ 3.0,
 ManagementService,–,SSH Service is activated,security|SshEnabled,,,,,,,≠ true,≠ true,

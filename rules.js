@@ -11,8 +11,8 @@ const RULES_DATA = {
       "scgId": "",
       "description": "Management Service's 'Client API Concurrency Limit' is not set to recommended value.",
       "conditionKey": "ComplianceMetrics|APILimits|Client_API_Concurrency_Limit",
-      "type": "metric",
-      "operator": "=",
+      "type": "property",
+      "operator": "!=",
       "value": "40.0",
       "valueType": "numeric",
       "note": ""
@@ -25,8 +25,8 @@ const RULES_DATA = {
       "scgId": "",
       "description": "Management Service's 'Client API Rate Limit' is not set to recommended value.",
       "conditionKey": "ComplianceMetrics|APILimits|Client_API_Rate_Limit",
-      "type": "metric",
-      "operator": "=",
+      "type": "property",
+      "operator": "!=",
       "value": "100.0",
       "valueType": "numeric",
       "note": ""
@@ -39,8 +39,8 @@ const RULES_DATA = {
       "scgId": "",
       "description": "Management Service \"http\" have session_timeout set to non-recommended value.",
       "conditionKey": "ComplianceMetrics|HttpSessionTimeOut",
-      "type": "metric",
-      "operator": "=",
+      "type": "property",
+      "operator": "!=",
       "value": "1800.0",
       "valueType": "numeric",
       "note": ""
@@ -53,8 +53,8 @@ const RULES_DATA = {
       "scgId": "",
       "description": "Logging-servers are not configured with log level as \"INFO\".",
       "conditionKey": "ComplianceMetrics|LoggingServerWithLogLevelNotInfoFound",
-      "type": "metric",
-      "operator": "!=",
+      "type": "property",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -67,8 +67,8 @@ const RULES_DATA = {
       "scgId": "",
       "description": "Logging-servers are not configured.",
       "conditionKey": "ComplianceMetrics|NumberOfLoggingServers",
-      "type": "metric",
-      "operator": "!=",
+      "type": "property",
+      "operator": "=",
       "value": "0.0",
       "valueType": "numeric",
       "note": ""
@@ -81,8 +81,8 @@ const RULES_DATA = {
       "scgId": "",
       "description": "Management Service in context is 'syslog'.",
       "conditionKey": "ComplianceMetrics|ServiceName",
-      "type": "metric",
-      "operator": "!=",
+      "type": "property",
+      "operator": "=",
       "value": "syslog",
       "valueType": "string",
       "note": ""
@@ -96,7 +96,7 @@ const RULES_DATA = {
       "description": "Encryption is not enabled on vSAN cache disk.",
       "conditionKey": "ConfigurationProperties|vsan|encryption",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "Enabled",
       "valueType": "string",
       "note": ""
@@ -110,7 +110,7 @@ const RULES_DATA = {
       "description": "vSAN cluster encryption is not enabled.",
       "conditionKey": "configuration|vsan|encryption",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "Enabled",
       "valueType": "string",
       "note": ""
@@ -124,7 +124,7 @@ const RULES_DATA = {
       "description": "VM.set-secure-boot - Secure boot is not enabled for guest OSes",
       "conditionKey": "config|boot_options_efi_secure_boot_enabled",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -138,7 +138,7 @@ const RULES_DATA = {
       "description": "Inter VM Transparent Page Sharing is Enabled",
       "conditionKey": "config|extraConfig|mem_tps_share",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -152,7 +152,7 @@ const RULES_DATA = {
       "description": "vNetwork.limit-network-healthcheck - VDS network healthcheck for Teaming Health Check is enabled",
       "conditionKey": "config|health_check_config|health_check_config_teaming",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -166,7 +166,7 @@ const RULES_DATA = {
       "description": "VDS network healthcheck for VLAN and MTU Health Check is enabled",
       "conditionKey": "config|health_check_config|health_check_config_vlan_mtu",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -180,7 +180,7 @@ const RULES_DATA = {
       "description": "VM.set-vmotion-encrypted - The configured vMotion encryption is not set to required",
       "conditionKey": "config|migrateEncryption",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "required",
       "valueType": "string",
       "note": ""
@@ -194,7 +194,7 @@ const RULES_DATA = {
       "description": "vNetwork.restrict-port-level-overrides - Port-level configuration Block overrides on VDS is not restricted",
       "conditionKey": "config|policies|override|block_override_allowed",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -208,7 +208,7 @@ const RULES_DATA = {
       "description": "vNetwork.restrict-port-level-overrides - Port-level configuration Netflow overrides on VDS is not restricted",
       "conditionKey": "config|policies|override|ipfix_override_allowed",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -222,7 +222,7 @@ const RULES_DATA = {
       "description": "vNetwork.restrict-port-level-overrides - Port-level configuration Live Port Moving overrides on VDS is not restricted",
       "conditionKey": "config|policies|override|live_port_moving_allowed",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -236,7 +236,7 @@ const RULES_DATA = {
       "description": "vNetwork.restrict-port-level-overrides - Restrict port-level configuration Network Resourcepool Moving overrides on VDS",
       "conditionKey": "config|policies|override|network_resourcepool_moving_override_allowed",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -250,7 +250,7 @@ const RULES_DATA = {
       "description": "Restrict port-level configuration overrides on VDS",
       "conditionKey": "config|policies|override|port_config_reset_at_disconnect",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -264,7 +264,7 @@ const RULES_DATA = {
       "description": "vNetwork.restrict-port-level-overrides - Port-level configuration Security Policy overrides on VDS is not restricted",
       "conditionKey": "config|policies|override|security_policy_override_allowed",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -278,7 +278,7 @@ const RULES_DATA = {
       "description": "vNetwork.restrict-port-level-overrides - Restrict port-level configuration Shaping overrides on VDS",
       "conditionKey": "config|policies|override|shaping_override_allowed",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -292,7 +292,7 @@ const RULES_DATA = {
       "description": "vNetwork.restrict-port-level-overrides - Port-level configuration Uplink Teaming overrides on VDS is not restricted",
       "conditionKey": "config|policies|override|uplink_teaming_override_allowed",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -306,7 +306,7 @@ const RULES_DATA = {
       "description": "vNetwork.restrict-port-level-overrides - Port-level configuration Vendor configuration overrides on VDS is not restricted",
       "conditionKey": "config|policies|override|vendor_config_override_allowed",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -320,7 +320,7 @@ const RULES_DATA = {
       "description": "vNetwork.restrict-port-level-overrides - Port-level configuration VLAN overrides on VDS is not restricted",
       "conditionKey": "config|policies|override|vlan_override_allowed",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -334,7 +334,7 @@ const RULES_DATA = {
       "description": "The Promiscuous Mode policy is not set to reject",
       "conditionKey": "config|policies|security|allow_promiscuous",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -348,7 +348,7 @@ const RULES_DATA = {
       "description": "The Forged Transmits policy is not set to reject",
       "conditionKey": "config|policies|security|forged_transmits",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -362,7 +362,7 @@ const RULES_DATA = {
       "description": "The MAC Address Changes policy is not set to reject",
       "conditionKey": "config|policies|security|mac_changes",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -376,7 +376,7 @@ const RULES_DATA = {
       "description": "DCUI.Access is not set for trusted users to override lockdown mode",
       "conditionKey": "config|security|dcui_access",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "none",
       "valueType": "string",
       "note": ""
@@ -390,10 +390,10 @@ const RULES_DATA = {
       "description": "The idle connections to DCUI to terminate left over login session is not set to desired value",
       "conditionKey": "config|security|dcui_timeout",
       "type": "property",
-      "operator": "=",
-      "value": "600",
+      "operator": "<",
+      "value": "600.0",
       "valueType": "numeric",
-      "note": "Symptom reports <600 because 0 means disabled. Reference value: 600."
+      "note": "Symptom reports <600 because 0 means disabled. Reference value: 600. Derivation: timeout reference value; the violation is '<' reference (0 = disabled also fires)."
     },
     {
       "id": "SymptomDefinition-VCF-SEC-VM-Deactivate-VMtools-autoinstall",
@@ -404,7 +404,7 @@ const RULES_DATA = {
       "description": "Auto install of tools is activated (5.5/6.0 Hardening Guide)",
       "conditionKey": "config|security|disable_autoinstall",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -418,7 +418,7 @@ const RULES_DATA = {
       "description": "Copy/paste operations are activated",
       "conditionKey": "config|security|disable_console_copy",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -432,7 +432,7 @@ const RULES_DATA = {
       "description": "Copy/paste operations are activated",
       "conditionKey": "config|security|disable_console_dnd",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -446,7 +446,7 @@ const RULES_DATA = {
       "description": "Copy/paste operations are activated",
       "conditionKey": "config|security|disable_console_paste",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -460,7 +460,7 @@ const RULES_DATA = {
       "description": "Users and processes without privileges can remove, connect and modify devices (5.5/6.0 Hardening Guide)",
       "conditionKey": "config|security|disable_device_interaction_connect",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -474,7 +474,7 @@ const RULES_DATA = {
       "description": "Users and processes without privileges can remove, connect and modify devices (5.5/6.0 Hardening Guide)",
       "conditionKey": "config|security|disable_device_interaction_edit",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -488,7 +488,7 @@ const RULES_DATA = {
       "description": "Virtual disk shrinking is activated",
       "conditionKey": "config|security|disable_disk_shrinking_shrink",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -502,7 +502,7 @@ const RULES_DATA = {
       "description": "Virtual disk shrinking is activated",
       "conditionKey": "config|security|disable_disk_shrinking_wiper",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -516,7 +516,7 @@ const RULES_DATA = {
       "description": "HGFS file transfers are activated",
       "conditionKey": "config|security|disable_hgfs",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -530,7 +530,7 @@ const RULES_DATA = {
       "description": "Independent nonpersistent disks are being used",
       "conditionKey": "config|security|disable_independent_nonpersistent",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -544,7 +544,7 @@ const RULES_DATA = {
       "description": "Autologon feature is activated",
       "conditionKey": "config|security|disable_unexposed_features_autologon",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -558,7 +558,7 @@ const RULES_DATA = {
       "description": "Bios Boot Specification feature is activated (5.5/6.0 Hardening Guide)",
       "conditionKey": "config|security|disable_unexposed_features_biosbbs",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -572,7 +572,7 @@ const RULES_DATA = {
       "description": "GetCreds feature is activated (5.5/6.0 Hardening Guide)",
       "conditionKey": "config|security|disable_unexposed_features_getcreds",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -586,7 +586,7 @@ const RULES_DATA = {
       "description": "launchmenu feature is activated",
       "conditionKey": "config|security|disable_unexposed_features_launchmenu",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -600,7 +600,7 @@ const RULES_DATA = {
       "description": "Memsfss feature is activated",
       "conditionKey": "config|security|disable_unexposed_features_memsfss",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -614,7 +614,7 @@ const RULES_DATA = {
       "description": "Protocolhandler feature is activated",
       "conditionKey": "config|security|disable_unexposed_features_protocolhandler",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -628,7 +628,7 @@ const RULES_DATA = {
       "description": "Shellaction is activated",
       "conditionKey": "config|security|disable_unexposed_features_shellaction",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -642,7 +642,7 @@ const RULES_DATA = {
       "description": "Toprequest feature is activated (5.5/6.0 Hardening Guide)",
       "conditionKey": "config|security|disable_unexposed_features_toporequest",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -656,7 +656,7 @@ const RULES_DATA = {
       "description": "Trash folder state is activated (5.5/6.0 Hardening Guide)",
       "conditionKey": "config|security|disable_unexposed_features_trashfolderstate",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -670,7 +670,7 @@ const RULES_DATA = {
       "description": "Tray icon feature is activated",
       "conditionKey": "config|security|disable_unexposed_features_trayicon",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -684,7 +684,7 @@ const RULES_DATA = {
       "description": "Unity feature is activated",
       "conditionKey": "config|security|disable_unexposed_features_unity",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -698,7 +698,7 @@ const RULES_DATA = {
       "description": "Unity Interlock is activated",
       "conditionKey": "config|security|disable_unexposed_features_unity_interlock",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -712,7 +712,7 @@ const RULES_DATA = {
       "description": "Unity taskbar feature is activated",
       "conditionKey": "config|security|disable_unexposed_features_unity_taskbar",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -727,9 +727,9 @@ const RULES_DATA = {
       "conditionKey": "config|security|disable_unexposed_features_unity_unityactive",
       "type": "property",
       "operator": "=",
-      "value": "false",
+      "value": "true",
       "valueType": "string",
-      "note": "Export contains contradictory conditions; conservative choice: Unity not active."
+      "note": "Export contains contradictory conditions; conservative choice: Unity not active. Derivation: desired state: Unity not active; conservative single condition for the contradictory baseline export ('= false', '!= none', '!= true') - fires only when Unity IS active."
     },
     {
       "id": "SymptomDefinition-VCF-SEC-VM-Deactivate-unexposed-features-unity-windowcontents",
@@ -740,7 +740,7 @@ const RULES_DATA = {
       "description": "Unity window contents is activated",
       "conditionKey": "config|security|disable_unexposed_features_unity_windowcontents",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -754,7 +754,7 @@ const RULES_DATA = {
       "description": "Unity push feature is activated",
       "conditionKey": "config|security|disable_unexposed_features_unitypush",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -768,7 +768,7 @@ const RULES_DATA = {
       "description": "version get feature is activated",
       "conditionKey": "config|security|disable_unexposed_features_versionget",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -782,7 +782,7 @@ const RULES_DATA = {
       "description": "Versionset feature is activated",
       "conditionKey": "config|security|disable_unexposed_features_versionset",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -796,7 +796,7 @@ const RULES_DATA = {
       "description": "VIX messages are activated on the VM (5.5/6.0 Hardening Guide)",
       "conditionKey": "config|security|disable_vix_messages",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -810,7 +810,7 @@ const RULES_DATA = {
       "description": "CD-ROM connected",
       "conditionKey": "config|security|disconnect_devices_cd",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -824,7 +824,7 @@ const RULES_DATA = {
       "description": "VM.disconnect-devices-floppy - Floppy drive connected",
       "conditionKey": "config|security|disconnect_devices_floppy",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -838,7 +838,7 @@ const RULES_DATA = {
       "description": "VM.disconnect-devices-parallel - Parallel port connected",
       "conditionKey": "config|security|disconnect_devices_parallel",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -852,7 +852,7 @@ const RULES_DATA = {
       "description": "VM.disconnect-devices-serial - Serial port connected",
       "conditionKey": "config|security|disconnect_devices_serial",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -866,7 +866,7 @@ const RULES_DATA = {
       "description": "Virtual AHCI controller connected",
       "conditionKey": "config|security|disconnect_devices_virtualahcicontroller",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -880,7 +880,7 @@ const RULES_DATA = {
       "description": "Virtual Ensoniq 1371 connected",
       "conditionKey": "config|security|disconnect_devices_virtualensoniq1371",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -894,7 +894,7 @@ const RULES_DATA = {
       "description": "Virtual HD audio card connected",
       "conditionKey": "config|security|disconnect_devices_virtualhdaudiocard",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -908,7 +908,7 @@ const RULES_DATA = {
       "description": "ESXi.ad-auth-proxy-domain-membership-status -  The Domain membership status is not set",
       "conditionKey": "config|security|domain_membership_status",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "ok",
       "valueType": "string",
       "note": ""
@@ -922,7 +922,7 @@ const RULES_DATA = {
       "description": "Users and processes without privileges can make use of dvfilter network APIs",
       "conditionKey": "config|security|dvfilter_bind_address",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "none",
       "valueType": "string",
       "note": ""
@@ -936,7 +936,7 @@ const RULES_DATA = {
       "description": "ISO 27001-27002 Active directory is not configured for Local Authentication",
       "conditionKey": "config|security|enable_ad_auth",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -950,7 +950,7 @@ const RULES_DATA = {
       "description": "vSphere Authentication Proxy not used for password protection when adding ESXi hosts to active directory",
       "conditionKey": "config|security|enable_auth_proxy",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "0.0",
       "valueType": "numeric",
       "note": ""
@@ -964,7 +964,7 @@ const RULES_DATA = {
       "description": "ISO 27001-27002 - Bidirectional CHAP is not enabled, authentication for iSCSI traffic",
       "conditionKey": "config|security|enable_chap_auth",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -978,7 +978,7 @@ const RULES_DATA = {
       "description": "Access to VM console is not controlled via VNC protocol",
       "conditionKey": "config|security|enable_console_VNC",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -992,7 +992,7 @@ const RULES_DATA = {
       "description": "ISO 27001-27002- VM.Deactivate-console-gui-options - Copy/paste operations are activated",
       "conditionKey": "config|security|enable_console_gui_options",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -1006,7 +1006,7 @@ const RULES_DATA = {
       "description": "Guests can recieve host information",
       "conditionKey": "config|security|enable_host_info",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -1020,7 +1020,7 @@ const RULES_DATA = {
       "description": "Managed Object Browser (MOB) is activated",
       "conditionKey": "config|security|enable_mob",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -1034,7 +1034,7 @@ const RULES_DATA = {
       "description": "VM.disable-non-essential-3D-features Configure system security parameters - Deactivate 3D features on Server and desktop virtual machines",
       "conditionKey": "config|security|enable_non_essential_3D_features",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -1048,7 +1048,7 @@ const RULES_DATA = {
       "description": "VM.Enable-VGA-Only-Mode Configure system security parameters - Deactivate all but VGA mode on specific virtual machines",
       "conditionKey": "config|security|enable_vga_only_mode",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -1062,7 +1062,7 @@ const RULES_DATA = {
       "description": "ESXi.set-vib-trusted-binaries - Only run trusted binaries delivered via VIB",
       "conditionKey": "config|security|execInstalledOnly",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -1076,13 +1076,13 @@ const RULES_DATA = {
       "description": "ESXi.firewall-restrict-access The Configuration of the ESXi host firewall to restrict access to services running on the host is not as per the recommended value.",
       "conditionKey": "config|security|firewallRule:Firewall Configured|servicesConfigured",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
     },
     {
-      "id": "SymptomDefinition-VCF-SEC-Integrity",
+      "id": "SymptomDefinition-VCF-SEC-Integrity-ac3eee5f",
       "resource": "HostSystem",
       "adapterKind": "VMWARE",
       "recommendation": "Recommendation-df-VMWARE-FixHardeningViolations",
@@ -1090,7 +1090,7 @@ const RULES_DATA = {
       "description": "Firewall is not configured for NTP service",
       "conditionKey": "config|security|firewallRule:NTP Client|allowedHosts",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "All IP",
       "valueType": "string",
       "note": ""
@@ -1118,7 +1118,7 @@ const RULES_DATA = {
       "description": "The exception users list is violating the recommended value",
       "conditionKey": "config|security|has_lockdown_exception_users",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -1132,7 +1132,7 @@ const RULES_DATA = {
       "description": "ESXi.set-info-logging-level - The log level is not set to info",
       "conditionKey": "config|security|host_agent_log_level",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "info",
       "valueType": "string",
       "note": ""
@@ -1146,10 +1146,10 @@ const RULES_DATA = {
       "description": "The ESXi host client sessions timeout is violating the recommended value",
       "conditionKey": "config|security|host_client_session_timeout",
       "type": "property",
-      "operator": "=",
-      "value": "900",
+      "operator": "<",
+      "value": "900.0",
       "valueType": "numeric",
-      "note": "Analogous to the DCUI timeout: symptom reports <900; reference 900 s."
+      "note": "Analogous to the DCUI timeout: symptom reports <900; reference 900 s. Derivation: timeout reference value; the violation is '<' reference (0 = disabled also fires)."
     },
     {
       "id": "SymptomDefinition-VCF-SEC-config-security-imageConfig-acceptance-level-risk-profile-2",
@@ -1160,7 +1160,7 @@ const RULES_DATA = {
       "description": "ESXi.verify-acceptance-level-accepted - Image Profile and VIB Acceptance Levels are neither VMware Certified nor VMware Accepted",
       "conditionKey": "config|security|imageConfig|acceptance_level_risk_profile_2",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -1174,7 +1174,7 @@ const RULES_DATA = {
       "description": "ISO 27001-27002 - CONFIGURATION SETTINGS-The Image Profile and VIB Acceptance Levels must be verified",
       "conditionKey": "config|security|imageConfig|acceptance_level_risk_profile_3",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -1188,7 +1188,7 @@ const RULES_DATA = {
       "description": "The SSH connection banner is not set",
       "conditionKey": "config|security|issue",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -1202,7 +1202,7 @@ const RULES_DATA = {
       "description": "VM.set-remote-console-connections-limit - The number of console connections is not set as per the acceptable limit",
       "conditionKey": "config|security|limit_console_connection",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "1.0",
       "valueType": "numeric",
       "note": ""
@@ -1216,7 +1216,7 @@ const RULES_DATA = {
       "description": "VM.set-retained-logs-count - The number of retained VM diagnostic logs is larger than acceptable level",
       "conditionKey": "config|security|limit_log_number",
       "type": "property",
-      "operator": "<=",
+      "operator": ">",
       "value": "10.0",
       "valueType": "numeric",
       "note": ""
@@ -1230,7 +1230,7 @@ const RULES_DATA = {
       "description": "VM.set-logs-size - The configured log size is lesser than acceptable level",
       "conditionKey": "config|security|limit_log_size",
       "type": "property",
-      "operator": ">=",
+      "operator": "<",
       "value": "2048000.0",
       "valueType": "numeric",
       "note": ""
@@ -1244,7 +1244,7 @@ const RULES_DATA = {
       "description": "Informational messages from the VM to the VMX file are not limited",
       "conditionKey": "config|security|limit_setinfo_size",
       "type": "property",
-      "operator": "<=",
+      "operator": ">",
       "value": "1048576.0",
       "valueType": "numeric",
       "note": ""
@@ -1258,7 +1258,7 @@ const RULES_DATA = {
       "description": "ESXi.set-normal-lockdown-mode - The lockdown mode to restrict access to ESXi is not set to normal",
       "conditionKey": "config|security|lockdown|lockdown_mode",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "lockdownDisabled",
       "valueType": "string",
       "note": ""
@@ -1272,8 +1272,8 @@ const RULES_DATA = {
       "description": "BPDU filter on the ESXi host to prevent being locked out of physical switch ports with Portfast and BPDU Guard is not enabled",
       "conditionKey": "config|security|net_block_guest_bpdu",
       "type": "property",
-      "operator": "=",
-      "value": "1",
+      "operator": "!=",
+      "value": "1.0",
       "valueType": "numeric",
       "note": "= 1 required."
     },
@@ -1286,13 +1286,13 @@ const RULES_DATA = {
       "description": "Access to VMs are not controlled through dvfilter network APIs",
       "conditionKey": "config|security|network_filter_enable",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
     },
     {
-      "id": "SymptomDefinition-VCF-SEC-Integrity-93",
+      "id": "SymptomDefinition-VCF-SEC-Integrity-154e742d",
       "resource": "HostSystem",
       "adapterKind": "VMWARE",
       "recommendation": "Recommendation-df-VMWARE-FixHardeningViolations",
@@ -1300,7 +1300,7 @@ const RULES_DATA = {
       "description": "NTP time synchronization server is not configured",
       "conditionKey": "config|security|ntpServer",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "none",
       "valueType": "string",
       "note": ""
@@ -1314,7 +1314,7 @@ const RULES_DATA = {
       "description": "The maximum number of days between password changes is violating the recommended value",
       "conditionKey": "config|security|password_max_days",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "9999.0",
       "valueType": "numeric",
       "note": ""
@@ -1328,7 +1328,7 @@ const RULES_DATA = {
       "description": "PCI pass through device is configured on the virtual machine",
       "conditionKey": "config|security|pci_device_configured",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -1342,8 +1342,8 @@ const RULES_DATA = {
       "description": "The count of failed login attempts before which the account gets locked out exceeds the maximum permissible value",
       "conditionKey": "config|security|security_account_lock_failures",
       "type": "property",
-      "operator": "=",
-      "value": "3",
+      "operator": "!=",
+      "value": "3.0",
       "valueType": "numeric",
       "note": "SCG 7/8: exactly 3; ISO: exactly 5 -> strictest value is 3."
     },
@@ -1356,7 +1356,7 @@ const RULES_DATA = {
       "description": "The time after which a locked account is automatically unlocked is not meeting the criteria",
       "conditionKey": "config|security|security_account_unlock_time",
       "type": "property",
-      "operator": ">=",
+      "operator": "<",
       "value": "900.0",
       "valueType": "numeric",
       "note": ""
@@ -1370,7 +1370,7 @@ const RULES_DATA = {
       "description": "ESXi.set-security-password-history - The Password reuse history configured for ESXi Shell and SSH sessions is lesser than acceptable level",
       "conditionKey": "config|security|security_password_history",
       "type": "property",
-      "operator": ">=",
+      "operator": "<",
       "value": "5.0",
       "valueType": "numeric",
       "note": ""
@@ -1384,7 +1384,7 @@ const RULES_DATA = {
       "description": "Password policy is not established for password complexity",
       "conditionKey": "config|security|security_password_quality_control",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "retry=3 min=disabled,15,15,15,15 max=64 similar=deny passphrase=3",
       "valueType": "string",
       "note": "SCG 8 (15 characters + passphrase) is stricter than ISO/6.x (7 characters)."
@@ -1398,7 +1398,7 @@ const RULES_DATA = {
       "description": "ESXi Shell service is running",
       "conditionKey": "config|security|service:ESXi Shell|isRunning",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -1412,7 +1412,7 @@ const RULES_DATA = {
       "description": "Non-compliant ESXi Shell service startup policy",
       "conditionKey": "config|security|service:ESXi Shell|policy",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "off",
       "valueType": "string",
       "note": ""
@@ -1426,10 +1426,10 @@ const RULES_DATA = {
       "description": "ISO 27001-27002 NTP time Synchronization service is not configured to start automatically",
       "conditionKey": "config|security|service:NTP Daemon|isRunning",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "true",
       "valueType": "string",
-      "note": "'false'/'none' are collector variants of the same condition."
+      "note": "'false'/'none' are collector variants of the same condition. Derivation: desired state: NTP daemon running; the single condition '!= true' covers both baseline collector variants ('= false' and '= none')."
     },
     {
       "id": "SymptomDefinition-VCF-SEC-config-security-service-NTP-Daemon-policy",
@@ -1440,7 +1440,7 @@ const RULES_DATA = {
       "description": "ESXi.config-ntp - NTP Daemon policy is not enabled",
       "conditionKey": "config|security|service:NTP Daemon|policy",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "on",
       "valueType": "string",
       "note": ""
@@ -1454,7 +1454,7 @@ const RULES_DATA = {
       "description": "ESXi.set-cimsfcb-watchdog-svc-stop -  The SFCBD Watch dog service is running",
       "conditionKey": "config|security|service:SFCB service|isRunning",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -1468,7 +1468,7 @@ const RULES_DATA = {
       "description": "ESXi.set-cimsfcb-watchdog-policy-off  - The SFCBD Watch dog service policy is On",
       "conditionKey": "config|security|service:SFCB service|policy",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "on",
       "valueType": "string",
       "note": ""
@@ -1482,7 +1482,7 @@ const RULES_DATA = {
       "description": "ESXi.set-slp-svc-stop -  The SLP service is running",
       "conditionKey": "config|security|service:SLP Service|isRunning",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -1496,7 +1496,7 @@ const RULES_DATA = {
       "description": "ESXi.set-slp-policy-off - The SLP service policy is On",
       "conditionKey": "config|security|service:SLP Service|policy",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "on",
       "valueType": "string",
       "note": ""
@@ -1510,7 +1510,7 @@ const RULES_DATA = {
       "description": "ISO 27001-27002 SNMP service is running",
       "conditionKey": "config|security|service:SNMP Server|isRunning",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -1524,7 +1524,7 @@ const RULES_DATA = {
       "description": "The SNMP Server startup policy is violating the recommended value",
       "conditionKey": "config|security|service:SNMP Server|policy",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "on",
       "valueType": "string",
       "note": ""
@@ -1538,7 +1538,7 @@ const RULES_DATA = {
       "description": "ESXi.Audit-SSH-Disable The sshd service status is not as per the recommended value.",
       "conditionKey": "config|security|service:SSH|isRunning",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -1552,7 +1552,7 @@ const RULES_DATA = {
       "description": "ESXi.set-ssh-policy-off - The SSH service policy is On",
       "conditionKey": "config|security|service:SSH|policy",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "off",
       "valueType": "string",
       "note": "'!= off' and '= on' are consistent: policy off."
@@ -1566,10 +1566,10 @@ const RULES_DATA = {
       "description": "ISO 27001-27002 - Timeout to automatically terminate idle sessions is not configured",
       "conditionKey": "config|security|shell_interactive_timeout",
       "type": "property",
-      "operator": "=",
-      "value": "900",
+      "operator": ">",
+      "value": "900.0",
       "valueType": "numeric",
-      "note": "Allowed range 1-900 s; reference 900."
+      "note": "Allowed range 1-900 s; reference 900. Derivation: timeout reference value; the violation is '>' reference (allowed range 1-reference; the disabled state '= 0' is not covered)."
     },
     {
       "id": "SymptomDefinition-VCF-SEC-ESXi-set-shell-timeout",
@@ -1580,10 +1580,10 @@ const RULES_DATA = {
       "description": "Timeout for ESXi Shell and SSH services is set for more than 15 minutes",
       "conditionKey": "config|security|shell_timeout",
       "type": "property",
-      "operator": "=",
-      "value": "900",
+      "operator": ">",
+      "value": "900.0",
       "valueType": "numeric",
-      "note": "Allowed range 1-900 s; reference 900."
+      "note": "Allowed range 1-900 s; reference 900. Derivation: timeout reference value; the violation is '>' reference (allowed range 1-reference; the disabled state '= 0' is not covered)."
     },
     {
       "id": "SymptomDefinition-VCF-SEC-config-security-suppressHyperthreadWarning",
@@ -1594,7 +1594,7 @@ const RULES_DATA = {
       "description": "ESXi.set-hyperthread-security-warning - Warning for potential hyperthreading security vulnerability is suppressed",
       "conditionKey": "config|security|suppressHyperthreadWarning",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "0.0",
       "valueType": "numeric",
       "note": ""
@@ -1608,7 +1608,7 @@ const RULES_DATA = {
       "description": "ESXi.set-shell-warning-enabled - Warning for support and troubleshooting interfaces is suppressed",
       "conditionKey": "config|security|suppressShellWarning",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "0.0",
       "valueType": "numeric",
       "note": ""
@@ -1622,7 +1622,7 @@ const RULES_DATA = {
       "description": "ISO 27001-27002 - Persistent logging is not configured for ESXi host",
       "conditionKey": "config|security|syslog_dir",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -1637,9 +1637,9 @@ const RULES_DATA = {
       "conditionKey": "config|security|syslog_host",
       "type": "property",
       "operator": "regex",
-      "value": ".+",
+      "value": "^(false|none)$",
       "valueType": "string",
-      "note": "Remote syslog must be configured."
+      "note": "Remote syslog must be configured. Derivation: desired state: remote syslog configured; the regex covers both baseline collector variants ('= false' and '= none')."
     },
     {
       "id": "SymptomDefinition-VCF-SEC-config-security-tlsDisabledProtocols",
@@ -1650,7 +1650,7 @@ const RULES_DATA = {
       "description": "ESXi.set-disable-deprecated-ssl-tls - Deactivate deprecated SSL or TLS protocols",
       "conditionKey": "config|security|tlsDisabledProtocols",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "sslv3,tlsv1,tlsv1.1",
       "valueType": "string",
       "note": ""
@@ -1664,7 +1664,7 @@ const RULES_DATA = {
       "description": "VM.set-guest-session-locked - The console session is not locked",
       "conditionKey": "config|security|tools_guest_desktop_autolock",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -1678,7 +1678,7 @@ const RULES_DATA = {
       "description": "ISO 27001-27002 - The default setting for intra-VM TPS is not correct",
       "conditionKey": "config|security|tps_share_force_salting",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "2.0",
       "valueType": "numeric",
       "note": ""
@@ -1692,7 +1692,7 @@ const RULES_DATA = {
       "description": "The welcome message is not set",
       "conditionKey": "config|security|welcome_message",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -1706,7 +1706,7 @@ const RULES_DATA = {
       "description": "vSphere Distributed Port Group is not an uplink",
       "conditionKey": "config|uplink",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -1720,10 +1720,10 @@ const RULES_DATA = {
       "description": "VM.set-virtual-hardware - The virtual machine hardware version not as per the recommended version",
       "conditionKey": "config|version",
       "type": "property",
-      "operator": ">=",
-      "value": "vmx-19",
+      "operator": "regex",
+      "value": "vmx-[1-9]|vmx-1[0-8]",
       "valueType": "string",
-      "note": "SCG 7 flags <=vmx-12 and SCG 8 flags <=vmx-18 as violations -> strictest requirement: hardware version >= vmx-19."
+      "note": "SCG 7 flags <=vmx-12 and SCG 8 flags <=vmx-18 as violations -> strictest requirement: hardware version >= vmx-19. Derivation: required: hardware version >= vmx-19; regex matches the violating (lower) hardware versions."
     },
     {
       "id": "SymptomDefinition-VCF-SEC-config-vsan-encryption",
@@ -1734,7 +1734,7 @@ const RULES_DATA = {
       "description": "vSAN encryption is not enabled on ESXi host.",
       "conditionKey": "config|vsan|encryption",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "Enabled",
       "valueType": "string",
       "note": ""
@@ -1748,7 +1748,7 @@ const RULES_DATA = {
       "description": "NTP Service is not configured properly",
       "conditionKey": "security|NtpServersCount",
       "type": "metric",
-      "operator": ">=",
+      "operator": "<",
       "value": "3.0",
       "valueType": "numeric",
       "note": ""
@@ -1762,7 +1762,7 @@ const RULES_DATA = {
       "description": "SSH Service is activated",
       "conditionKey": "security|SshEnabled",
       "type": "metric",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -1776,7 +1776,7 @@ const RULES_DATA = {
       "description": "NSX Manager's 'CLI Timeout' is not set to recommended value.",
       "conditionKey": "summary|ComplianceMetrics|CLITimeOutInSeconds",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "600.0",
       "valueType": "numeric",
       "note": ""
@@ -1790,7 +1790,7 @@ const RULES_DATA = {
       "description": "NSX manager communication to LDAP server for authentication is not using LDAPS.",
       "conditionKey": "summary|ComplianceMetrics|LDAPServerConfiguredWithLDAPS",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -1804,7 +1804,7 @@ const RULES_DATA = {
       "description": "NSX Manager's Auth Policy 'API Lockout Period' is not set to recommended value.",
       "conditionKey": "summary|ComplianceMetrics|authPolicy|apiAuthPolicy|failed_auth_lockout_period",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "900.0",
       "valueType": "numeric",
       "note": ""
@@ -1818,7 +1818,7 @@ const RULES_DATA = {
       "description": "NSX Manager's Auth Policy 'API Maximum Auth Failures' is not set to recommended value.",
       "conditionKey": "summary|ComplianceMetrics|authPolicy|apiAuthPolicy|max_auth_failures",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "3.0",
       "valueType": "numeric",
       "note": ""
@@ -1832,7 +1832,7 @@ const RULES_DATA = {
       "description": "NSX Manager's Auth Policy 'CLI Lockout Period' is not set to recommended value.",
       "conditionKey": "summary|ComplianceMetrics|authPolicy|cliAuthPolicy|failed_auth_lockout_period",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "900.0",
       "valueType": "numeric",
       "note": ""
@@ -1846,7 +1846,7 @@ const RULES_DATA = {
       "description": "NSX Manager's Auth Policy 'CLI Maximum Auth Failures' is not set to recommended value.",
       "conditionKey": "summary|ComplianceMetrics|authPolicy|cliAuthPolicy|max_auth_failures",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "3.0",
       "valueType": "numeric",
       "note": ""
@@ -1860,7 +1860,7 @@ const RULES_DATA = {
       "description": "NSX Manager hasn't enforced a minimum 12-character password length.",
       "conditionKey": "summary|ComplianceMetrics|authPolicy|minimum_password_length",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "12.0",
       "valueType": "numeric",
       "note": ""
@@ -1874,7 +1874,7 @@ const RULES_DATA = {
       "description": "NSX Manager is configured to conduct backups.",
       "conditionKey": "summary|ComplianceMetrics|backup_enabled",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "true",
       "valueType": "string",
       "note": "NSX-T backup must be enabled (symptom defined twice, direction manually verified)."
@@ -1888,7 +1888,7 @@ const RULES_DATA = {
       "description": "SFTP server not configured for backup.",
       "conditionKey": "summary|ComplianceMetrics|backup_sftp_configured",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -1902,7 +1902,7 @@ const RULES_DATA = {
       "description": "NSX Manager Hardening is disabled",
       "conditionKey": "summary|ComplianceMetrics|hardening_status",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -1916,7 +1916,7 @@ const RULES_DATA = {
       "description": "TLS v1.1 is enabled.",
       "conditionKey": "summary|ComplianceMetrics|tls_v1dot1_enabled",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -1930,7 +1930,7 @@ const RULES_DATA = {
       "description": "ISO 27001-27002 - CONFIGURATION SETTINGS-The system must enable SSL for Network File Copy (NFC).",
       "conditionKey": "summary|nfcusessl",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -1944,7 +1944,7 @@ const RULES_DATA = {
       "description": "SSH Access is not restricted",
       "conditionKey": "vc_appliance|hasAccessSSH",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "true",
       "valueType": "string",
       "note": ""
@@ -1958,7 +1958,7 @@ const RULES_DATA = {
       "description": "vCenter.set-remote-logging - Remote logging is not enabled",
       "conditionKey": "vc_appliance|hasLoggingForwardingConfigs",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -1972,7 +1972,7 @@ const RULES_DATA = {
       "description": "vCenter.set-file-based-backup-recovery - File-Based Backup and Recovery is not Configured",
       "conditionKey": "vc_appliance|hasRecoveryBackupJobs",
       "type": "property",
-      "operator": "!=",
+      "operator": "=",
       "value": "false",
       "valueType": "string",
       "note": ""
@@ -1986,7 +1986,7 @@ const RULES_DATA = {
       "description": "The number of Network interface controllers is violating the recommended value",
       "conditionKey": "vc_appliance|networkNICs",
       "type": "property",
-      "operator": "<=",
+      "operator": ">",
       "value": "1.0",
       "valueType": "numeric",
       "note": ""
@@ -2000,7 +2000,7 @@ const RULES_DATA = {
       "description": "vCenter.set-time-keeping - Configure vCenter Server timekeeping",
       "conditionKey": "vc_appliance|timeSyncMode",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "NTP",
       "valueType": "string",
       "note": ""
@@ -2014,7 +2014,7 @@ const RULES_DATA = {
       "description": "Virtual machine does not comply with to storage policy.",
       "conditionKey": "vsan|policy|compliance",
       "type": "property",
-      "operator": "=",
+      "operator": "!=",
       "value": "Compliant",
       "valueType": "string",
       "note": ""
