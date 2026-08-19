@@ -153,9 +153,18 @@
 
 const OPERATORS = ["=", "!=", "<", "<=", ">", ">=", "contains", "regex"];
 const NUMERIC_RE = /^-?\d+(\.\d+)?$/;
-const STORE_KEY = "vcf-ops-scorecard-builder.v1";
+const STORE_KEY_V1 = "vcf-ops-scorecard-builder.v1";
+const STORE_KEY = "vcf-ops-scorecard-builder.v2";
+const STORE_BACKUP_KEY = STORE_KEY + ".backup";
+const SAVE_DEBOUNCE_MS = 300;
 
-const RULES = RULES_DATA.rules;
+// rules.js bootstrap guard: if the data file never loaded, RULES stays null and
+// init() is skipped in favour of a visible error card (see bottom of this script).
+const RULES = typeof RULES_DATA !== "undefined" && RULES_DATA && Array.isArray(RULES_DATA.rules)
+  ? RULES_DATA.rules
+  : null;
+// id -> rule, built once; replaces the per-edit RULES.find() linear scan
+const ruleById = new Map(RULES ? RULES.map(r => [r.id, r]) : []);
 const state = {
   settings: { scorecardName: "VCF Security Benchmark", severity: "warning", idPrefix: "VCF-SEC" },
   overrides: {}, // id -> { included?, operator?, value?, type? }
@@ -196,7 +205,8 @@ function isModified(rule) {
 function setOverride(id, patch) {
   const o = Object.assign({}, state.overrides[id], patch);
   // drop keys back at default so "modified" detection stays accurate
-  const rule = RULES.find(r => r.id === id);
+  const rule = ruleById.get(id);
+  if (!rule) return; // defensive: overrides are keyed by rendered rule ids, but never deref null
   if (o.included === true) delete o.included;
   if (o.operator === rule.operator) delete o.operator;
   if (o.value === rule.value) delete o.value;
@@ -206,20 +216,95 @@ function setOverride(id, patch) {
   save();
 }
 
+function writeStore(payload) {
+  // every successful save also refreshes a backup copy of the last valid state
+  localStorage.setItem(STORE_KEY, payload);
+  localStorage.setItem(STORE_BACKUP_KEY, payload);
+}
+
+let saveTimer = null;
+let savePending = false;
+
 function save() {
+  // debounced (300ms trailing): one write per burst of edits, not one per keystroke
+  savePending = true;
+  if (saveTimer !== null) clearTimeout(saveTimer);
+  saveTimer = setTimeout(flushSave, SAVE_DEBOUNCE_MS);
+}
+
+function flushSave() {
+  // write pending changes synchronously (downloads, beforeunload, tab hidden)
+  if (saveTimer !== null) { clearTimeout(saveTimer); saveTimer = null; }
+  if (!savePending) return;
+  savePending = false;
   try {
-    localStorage.setItem(STORE_KEY, JSON.stringify(state));
+    writeStore(JSON.stringify(state));
   } catch (e) { /* storage unavailable - ignore */ }
 }
 
-function load() {
+function readStore(key) {
+  // parsed payload, or null when the key is absent or its JSON is corrupt
+  const raw = localStorage.getItem(key);
+  if (raw === null) return null;
   try {
-    const raw = localStorage.getItem(STORE_KEY);
-    if (!raw) return;
-    const parsed = JSON.parse(raw);
+    return JSON.parse(raw);
+  } catch (e) {
+    return null;
+  }
+}
+
+function showNotice(kind, html) {
+  // small clr-alert card at the top of the content area
+  const area = document.querySelector(".content-area");
+  if (!area) return;
+  const el = document.createElement("div");
+  el.className = "alert alert-" + kind;
+  el.setAttribute("role", "alert");
+  el.innerHTML =
+    '<div class="alert-items"><div class="alert-item static">' +
+    '<div class="alert-icon-wrapper"><span class="alert-icon">&#9432;</span></div>' +
+    '<span class="alert-text">' + html + "</span>" +
+    "</div></div>";
+  const anchor = area.querySelector(".card");
+  if (anchor) area.insertBefore(el, anchor);
+  else area.prepend(el);
+}
+
+function load() {
+  let parsed = null;
+  let corrupt = false;
+
+  if (localStorage.getItem(STORE_KEY) === null && localStorage.getItem(STORE_KEY_V1) !== null) {
+    // storage key bumped to v2: migrate a v1 payload forward exactly once
+    parsed = readStore(STORE_KEY_V1);
+    if (parsed !== null) {
+      try {
+        writeStore(JSON.stringify(parsed));
+        localStorage.removeItem(STORE_KEY_V1);
+      } catch (e) { /* storage unavailable - keep v1 as the source */ }
+    } else {
+      corrupt = true; // v1 present but unreadable
+    }
+  }
+
+  if (parsed === null && localStorage.getItem(STORE_KEY) !== null) {
+    parsed = readStore(STORE_KEY);
+    if (parsed === null) {
+      corrupt = true; // current payload is corrupt - try the backup before giving up
+      parsed = readStore(STORE_BACKUP_KEY);
+    }
+  }
+
+  if (parsed !== null) {
+    if (corrupt) {
+      try { writeStore(JSON.stringify(parsed)); } catch (e) { /* storage unavailable */ }
+      showNotice("warning", "Restored your last saved customizations from backup.");
+    }
     if (parsed.settings) Object.assign(state.settings, parsed.settings);
     if (parsed.overrides) state.overrides = parsed.overrides;
-  } catch (e) { /* corrupt state - ignore */ }
+  } else if (corrupt) {
+    showNotice("warning", "Saved customizations could not be restored and were reset.");
+  }
 }
 
 // ---------- rendering ----------
@@ -524,6 +609,9 @@ function download(filename, content) {
 
 function init() {
   load();
+  // never lose a pending debounced write on navigation or tab switch
+  window.addEventListener("beforeunload", flushSave);
+  document.addEventListener("visibilitychange", () => { if (document.hidden) flushSave(); });
   document.getElementById("scorecardName").value = state.settings.scorecardName;
   document.getElementById("severity").value = state.settings.severity;
   document.getElementById("idPrefix").value = state.settings.idPrefix;
@@ -575,13 +663,28 @@ function init() {
     applyFilter();
   });
 
-  document.getElementById("downloadAlerts").addEventListener("click", () =>
-    download("Alert-and-SymptomDefinitions.xml", buildAlertsXml()));
-  document.getElementById("downloadScorecard").addEventListener("click", () =>
-    download("Compliance-Scorecard.xml", buildScorecardXml()));
+  document.getElementById("downloadAlerts").addEventListener("click", () => {
+    flushSave(); // don't lose pending debounced writes across the download
+    download("Alert-and-SymptomDefinitions.xml", buildAlertsXml());
+  });
+  document.getElementById("downloadScorecard").addEventListener("click", () => {
+    flushSave();
+    download("Compliance-Scorecard.xml", buildScorecardXml());
+  });
 }
 
-init();
+if (RULES) {
+  init();
+} else {
+  // rules.js missing or corrupt: fail visibly, render nothing half-baked
+  showNotice("danger",
+    "<strong>Rule data failed to load</strong> &mdash; the rules.js file is missing or corrupt. " +
+    "Restore rules.js next to index.html and reload this page.");
+  for (const sel of [".card", ".toolbar", ".table-wrapper"]) {
+    const el = document.querySelector(".content-area " + sel);
+    if (el) el.style.display = "none";
+  }
+}
 </script>
 </body>
 </html>
