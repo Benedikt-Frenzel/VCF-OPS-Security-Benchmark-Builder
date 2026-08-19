@@ -86,6 +86,28 @@
               <button id="resetAll" class="btn btn-link-danger">Reset all customizations</button>
             </div>
           </div>
+          <style>[hidden]{display:none !important;}</style>
+          <div id="prefixWarning" class="alert alert-warning" role="alert" hidden>
+            <div class="alert-items">
+              <div class="alert-item static">
+                <div class="alert-icon-wrapper"><span class="alert-icon">&#9888;</span></div>
+                <span class="alert-text" id="prefixWarningText"></span>
+              </div>
+            </div>
+          </div>
+          <div id="exportError" class="alert alert-danger" role="alert" hidden>
+            <div class="alert-items">
+              <div class="alert-item static">
+                <div class="alert-icon-wrapper"><span class="alert-icon">&#9888;</span></div>
+                <span class="alert-text">
+                  Export is disabled: <strong><span id="exportErrorCount">0</span> included rule(s)</strong> have invalid
+                  operator/value/valueType combinations &mdash; Aria Operations would reject or misinterpret the generated XML.
+                  Fix the highlighted values or exclude those rules.
+                  <ul id="exportErrorList" style="margin: 0.3rem 0 0; padding-left: 1.1rem; text-align: left;"></ul>
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -109,6 +131,7 @@
           <button id="excludeFiltered" class="btn btn-sm btn-outline">Exclude filtered</button>
         </div>
         <div class="counts">
+          <span class="label label-danger" id="invalidCountWrap" hidden tabindex="0" role="status" title="Some included rules have invalid values. Hover or focus here for details."><span id="countInvalid">0</span> invalid</span>
           <span class="label label-blue"><span id="countIncluded">0</span> included</span>
           <span class="label label-purple"><span id="countModified">0</span> modified</span>
           <span class="label"><span id="countTotal">0</span> rules</span>
@@ -313,7 +336,9 @@ function buildTable() {
     valInput.type = "text";
     valInput.className = "clr-input value-input";
     valInput.addEventListener("input", () => {
-      setOverride(rule.id, { value: valInput.value });
+      const clean = sanitizeValue(valInput.value); // strip XML-illegal control chars on input
+      if (clean !== valInput.value) valInput.value = clean;
+      setOverride(rule.id, { value: clean });
       refreshRow(rule);
       updateCounts();
     });
@@ -354,7 +379,32 @@ function refreshRow(rule) {
   els.typeSel.value = eff.type;
   els.opSel.value = eff.operator;
   if (els.valInput.value !== eff.value) els.valInput.value = eff.value;
-  els.valInput.classList.toggle("invalid", eff.value.trim() === "");
+  const error = validateRule(eff);
+  els.valInput.classList.toggle("invalid", error !== null);
+  if (error) {
+    els.valInput.setAttribute("aria-invalid", "true");
+    els.valInput.title = error;
+    if (!els.valHint) {
+      const hint = document.createElement("span");
+      hint.className = "sr-only";
+      hint.style.position = "absolute";
+      hint.style.width = "1px";
+      hint.style.height = "1px";
+      hint.style.padding = "0";
+      hint.style.margin = "-1px";
+      hint.style.overflow = "hidden";
+      hint.style.clip = "rect(0, 0, 0, 0)";
+      hint.style.whiteSpace = "nowrap";
+      hint.style.border = "0";
+      els.valInput.after(hint);
+      els.valHint = hint;
+    }
+    els.valHint.textContent = error;
+  } else {
+    els.valInput.removeAttribute("aria-invalid");
+    els.valInput.removeAttribute("title");
+    if (els.valHint) els.valHint.textContent = "";
+  }
   els.tr.classList.toggle("modified", modified);
   els.tr.classList.toggle("excluded", !eff.included);
   els.modBadge.style.display = modified ? "" : "none";
@@ -362,17 +412,25 @@ function refreshRow(rule) {
 }
 
 function updateCounts() {
-  let included = 0, modified = 0;
+  let included = 0, modified = 0, invalid = 0;
   for (const rule of RULES) {
-    if (effective(rule).included) included++;
+    const eff = effective(rule);
+    if (eff.included) {
+      included++;
+      if (validateRule(eff)) invalid++; // only included rules block the export
+    }
     if (isModified(rule)) modified++;
   }
   document.getElementById("countIncluded").textContent = included;
   document.getElementById("countModified").textContent = modified;
   document.getElementById("countTotal").textContent = RULES.length;
-  const none = included === 0;
-  document.getElementById("downloadAlerts").disabled = none;
-  document.getElementById("downloadScorecard").disabled = none;
+  document.getElementById("countInvalid").textContent = invalid;
+  document.getElementById("invalidCountWrap").hidden = invalid === 0;
+  if (invalid === 0) document.getElementById("exportError").hidden = true;
+  const blocked = included === 0 || invalid > 0;
+  document.getElementById("downloadAlerts").disabled = blocked;
+  document.getElementById("downloadScorecard").disabled = blocked;
+  updatePrefixWarning();
 }
 
 // ---------- filtering ----------
@@ -399,6 +457,89 @@ function applyFilter() {
   }
 }
 
+// ---------- export validation ----------
+
+// XML-illegal or unsafe in attribute values: everything below U+0020 (incl. tab/newline) plus U+007F
+const XML_ILLEGAL_RE = /[\x00-\x1F\x7F]/g;
+
+function sanitizeValue(value) {
+  return String(value).replace(XML_ILLEGAL_RE, "");
+}
+
+function isNumericValue(value) {
+  return NUMERIC_RE.test(String(value).trim());
+}
+
+const COMPARISON_OPERATORS = ["<", "<=", ">", ">="]; // numeric-only in Aria Operations
+const STRING_ONLY_OPERATORS = ["contains", "regex"]; // string-only in Aria Operations
+
+// Validates an effective rule ({ operator, value, ... }) for export.
+// Returns an error string describing why Aria Operations would reject or misinterpret
+// the generated symptom definition, or null when the rule is valid.
+function validateRule(eff) {
+  const value = sanitizeValue(eff.value);
+  if (value.trim() === "") return "Value is empty \u2014 the export would write value=\"\".";
+  const numeric = isNumericValue(value);
+  if (STRING_ONLY_OPERATORS.includes(eff.operator) && numeric) {
+    return 'Operator "' + eff.operator + '" only matches strings, but "' + value +
+      '" parses as numeric (valueType would be numeric). Enter a non-numeric value.';
+  }
+  if (COMPARISON_OPERATORS.includes(eff.operator) && !numeric) {
+    return 'Operator "' + eff.operator + '" compares numerically, but "' + value +
+      '" is not numeric. String comparison with <, <=, >, >= is invalid in Aria Operations.';
+  }
+  return null;
+}
+
+// Only included rules take part in the export, so only they can block it (#4).
+function invalidIncludedRules() {
+  return includedRules().filter(r => validateRule(effective(r)) !== null);
+}
+
+// #11 (UI part): prefixes that collide with existing Aria Operations content.
+const RESERVED_ID_PREFIXES = ["VMWARE", "ISO", "NSXTADAPTER", "VIRTUALANDPHYSICALSANADAPTER"];
+
+function updatePrefixWarning() {
+  const box = document.getElementById("prefixWarning");
+  if (!box) return;
+  const sanitized = String(state.settings.idPrefix || "").trim().replace(/[^A-Za-z0-9-]/g, "-");
+  let msg = null;
+  if (/^-*$/.test(sanitized)) {
+    msg = 'The definition ID prefix is empty or contains no usable letters/digits. ' +
+      'Exports fall back to the default prefix "VCF-SEC".';
+  } else {
+    const upper = sanitized.toUpperCase();
+    const reserved = RESERVED_ID_PREFIXES.find(p => upper === p || upper.startsWith(p));
+    if (reserved) {
+      msg = 'The definition ID prefix "' + sanitized + '" equals or starts with the reserved prefix "' + reserved +
+        '". Generated definition IDs can collide with existing Aria Operations content and ' +
+        'silently overwrite those definitions on re-import. Use a project-specific prefix.';
+    }
+  }
+  document.getElementById("prefixWarningText").textContent = msg || "";
+  box.hidden = msg === null;
+}
+
+function showExportErrors() {
+  const invalid = invalidIncludedRules();
+  if (invalid.length === 0) return;
+  const list = document.getElementById("exportErrorList");
+  list.textContent = "";
+  for (const rule of invalid.slice(0, 5)) {
+    const li = document.createElement("li");
+    li.textContent = (rule.scgId ? rule.scgId + " \u2014 " : "") + rule.description + ": " +
+      validateRule(effective(rule));
+    list.append(li);
+  }
+  if (invalid.length > 5) {
+    const li = document.createElement("li");
+    li.textContent = "\u2026 and " + (invalid.length - 5) + " more (fix or exclude the affected rows)";
+    list.append(li);
+  }
+  document.getElementById("exportErrorCount").textContent = String(invalid.length);
+  document.getElementById("exportError").hidden = false;
+}
+
 // ---------- XML generation ----------
 
 function esc(text) {
@@ -415,7 +556,8 @@ function slug(text) {
 
 function prefix() {
   const p = state.settings.idPrefix.trim() || "VCF-SEC";
-  return p.replace(/[^A-Za-z0-9-]/g, "-");
+  const s = p.replace(/[^A-Za-z0-9-]/g, "-");
+  return /^-*$/.test(s) ? "VCF-SEC" : s; // empty or effectively-empty prefixes fall back to the default
 }
 
 function includedRules() {
@@ -464,14 +606,15 @@ function buildAlertsXml() {
   L.push('    <SymptomDefinitions>');
   for (const rule of rules) {
     const eff = effective(rule);
+    const value = sanitizeValue(eff.value); // defensive: strip XML-illegal control chars again at export time
     const name = (rule.scgId ? rule.scgId + " - " : "") + rule.description;
-    const valueType = NUMERIC_RE.test(eff.value.trim()) ? "numeric" : "string";
+    const valueType = NUMERIC_RE.test(value.trim()) ? "numeric" : "string";
     L.push('        <SymptomDefinition adapterKind="' + esc(rule.adapterKind) +
       '" disableInBasePolicy="true" id="' + esc(symptomId(rule)) + '" name="' + esc(name) +
       '" resourceKind="' + esc(rule.resource) + '">');
     L.push('            <State severity="' + esc(state.settings.severity) + '">');
     L.push('                <Condition key="' + esc(rule.conditionKey) + '" operator="' + esc(eff.operator) +
-      '" thresholdType="static" type="' + esc(eff.type) + '" value="' + esc(eff.value) +
+      '" thresholdType="static" type="' + esc(eff.type) + '" value="' + esc(value) +
       '" valueType="' + valueType + '"/>');
     L.push('            </State>');
     L.push('        </SymptomDefinition>');
@@ -509,6 +652,10 @@ function buildScorecardXml() {
 }
 
 function download(filename, content) {
+  if (invalidIncludedRules().length > 0) { // defensive: buttons should be disabled, but never export invalid content
+    showExportErrors();
+    return;
+  }
   const blob = new Blob([content], { type: "application/xml;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -582,6 +729,35 @@ function init() {
 }
 
 init();
+
+// ---------- export validation wiring ----------
+
+(function wireExportValidation() {
+  let hideTimer = null;
+  const errorBox = document.getElementById("exportError");
+  const revealErrors = () => {
+    clearTimeout(hideTimer);
+    showExportErrors();
+  };
+  const scheduleHide = () => {
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => { errorBox.hidden = true; }, 400);
+  };
+  // show the "why is export disabled?" details when the user probes a disabled button or the invalid count
+  for (const el of [
+    document.getElementById("downloadAlerts"),
+    document.getElementById("downloadScorecard"),
+    document.getElementById("invalidCountWrap"),
+  ]) {
+    el.addEventListener("mouseenter", revealErrors);
+    el.addEventListener("focus", revealErrors);
+    el.addEventListener("mouseleave", scheduleHide);
+    el.addEventListener("blur", scheduleHide);
+  }
+  errorBox.addEventListener("mouseenter", () => clearTimeout(hideTimer));
+  errorBox.addEventListener("mouseleave", scheduleHide);
+  document.getElementById("idPrefix").addEventListener("input", updatePrefixWarning);
+})();
 </script>
 </body>
 </html>
