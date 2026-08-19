@@ -206,6 +206,7 @@ function setOverride(id, patch) {
   const o = Object.assign({}, state.overrides[id], patch);
   // drop keys back at default so "modified" detection stays accurate
   const rule = ruleById.get(id);
+  if (!rule) return; // defensive: overrides are keyed by rendered rule ids, but never deref null
   if (o.included === true) delete o.included;
   if (o.operator === rule.operator) delete o.operator;
   if (o.value === rule.value) delete o.value;
