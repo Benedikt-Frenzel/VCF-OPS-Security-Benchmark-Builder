@@ -274,6 +274,8 @@ function buildTable() {
       noteBtn.className = "note-trigger";
       noteBtn.setAttribute("aria-label", "Note");
       noteBtn.setAttribute("aria-describedby", noteId);
+      // Sighted mouse users can't read the sr-only note below; expose it as a tooltip too.
+      noteBtn.title = "Decision matrix note: " + rule.note;
       noteBtn.textContent = "ⓘ";
       const noteText = document.createElement("div");
       noteText.id = noteId;
