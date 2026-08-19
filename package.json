@@ -4,6 +4,9 @@
   "private": true,
   "description": "VCF Operations Scorecard Builder - development/test tooling (the app itself is static index.html + rules.js)",
   "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "test": "node --test"
   },

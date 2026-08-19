@@ -139,7 +139,7 @@ test("unchecking a row's include checkbox removes it from the export", () => {
   assert.equal(xml.querySelector(`Condition[key="${CONCURRENCY_KEY}"]`), null);
 });
 
-test("changing operator and value through the DOM updates overrides and the XML", () => {
+test("changing operator and value through the DOM updates overrides and the XML", async () => {
   const dom = loadPage();
   const doc = dom.window.document;
 
@@ -159,7 +159,10 @@ test("changing operator and value through the DOM updates overrides and the XML"
   assert.equal(doc.getElementById("countIncluded").textContent, "144");
 
   // Overrides must persist to localStorage (customizations survive reloads).
-  const saved = JSON.parse(dom.window.localStorage.getItem("vcf-ops-scorecard-builder.v1"));
+  // Saves are debounced (300 ms trailing), so wait for the flush; the store
+  // schema is versioned (v2 since the resilience rework).
+  await new Promise(r => setTimeout(r, 400));
+  const saved = JSON.parse(dom.window.localStorage.getItem("vcf-ops-scorecard-builder.v2"));
   assert.deepEqual(saved.overrides[CONCURRENCY_ID], { operator: "<=", value: "42" });
 
   const xml = parseXml(dom, dom.window.buildAlertsXml());

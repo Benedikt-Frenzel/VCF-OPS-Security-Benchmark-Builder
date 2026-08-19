@@ -1566,10 +1566,10 @@ const RULES_DATA = {
       "description": "ISO 27001-27002 - Timeout to automatically terminate idle sessions is not configured",
       "conditionKey": "config|security|shell_interactive_timeout",
       "type": "property",
-      "operator": "<",
+      "operator": ">",
       "value": "900.0",
       "valueType": "numeric",
-      "note": "Allowed range 1-900 s; reference 900. Derivation: timeout reference value; the violation is '<' reference (0 = disabled also fires)."
+      "note": "Allowed range 1-900 s; reference 900. Derivation: timeout reference value; the violation is '>' reference (allowed range 1-reference; the disabled state '= 0' is not covered)."
     },
     {
       "id": "SymptomDefinition-VCF-SEC-ESXi-set-shell-timeout",
@@ -1580,10 +1580,10 @@ const RULES_DATA = {
       "description": "Timeout for ESXi Shell and SSH services is set for more than 15 minutes",
       "conditionKey": "config|security|shell_timeout",
       "type": "property",
-      "operator": "<",
+      "operator": ">",
       "value": "900.0",
       "valueType": "numeric",
-      "note": "Allowed range 1-900 s; reference 900. Derivation: timeout reference value; the violation is '<' reference (0 = disabled also fires)."
+      "note": "Allowed range 1-900 s; reference 900. Derivation: timeout reference value; the violation is '>' reference (allowed range 1-reference; the disabled state '= 0' is not covered)."
     },
     {
       "id": "SymptomDefinition-VCF-SEC-config-security-suppressHyperthreadWarning",
