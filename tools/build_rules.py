@@ -1,0 +1,154 @@
+#!/usr/bin/env python3
+"""Build rules.js for the VCF Operations Scorecard Builder.
+
+Reads the scrubbed decision matrix CSV (`data/decision-matrix.csv` in this repo)
+and emits a JavaScript data file consumed by index.html.
+
+Defaults are derived from the `strictest_requirement` column of the source matrix.
+
+Usage:
+    python3 tools/build_rules.py [--csv data/decision-matrix.csv] [--out rules.js]
+"""
+
+import argparse
+import csv
+import json
+import re
+
+# vCenter / Aria Operations adapter kind per resource kind.
+ADAPTER_KIND = {
+    "VirtualMachine": "VMWARE",
+    "HostSystem": "VMWARE",
+    "DistributedVirtualPortgroup": "VMWARE",
+    "VmwareDistributedVirtualSwitch": "VMWARE",
+    "VMwareAdapter Instance": "VMWARE",
+    "NSXTAdapterInstance": "NSXTAdapter",
+    "ManagementService": "NSXTAdapter",
+    "CacheDisk": "VirtualAndPhysicalSANAdapter",
+    "CapacityDisk": "VirtualAndPhysicalSANAdapter",
+    "VirtualSANDCCluster": "VirtualAndPhysicalSANAdapter",
+}
+
+# Remediation recommendation reference per adapter kind.
+RECOMMENDATION = {
+    "VMWARE": "Recommendation-df-VMWARE-FixHardeningViolations",
+    "NSXTAdapter": "Recommendation-df-NSX-Security-Guidelines",
+    "VirtualAndPhysicalSANAdapter": "Recommendation-df-VirtualAndPhysicalSANAdapter-FixHardeningViolations",
+}
+
+OPERATOR_MAP = {
+    "=": "=",
+    "!=": "!=",
+    "\u2260": "!=",  # !=
+    "<": "<",
+    "<=": "<=",
+    "\u2264": "<=",  # <=
+    ">": ">",
+    ">=": ">=",
+    "\u2265": ">=",  # >=
+}
+
+OP_PATTERN = re.compile(r"^(<=|>=|[=\u2260<\u2264>\u2265])\s*(.+)$", re.DOTALL)
+NUMERIC_PATTERN = re.compile(r"^-?\d+(\.\d+)?$")
+
+# German shorthand used in the source matrix, mapped to usable defaults.
+VALUE_ALIASES = {
+    "l\u00e4uft": ("=", "true"),  # service is running
+    "konfiguriert": ("regex", ".+"),  # any value is set
+}
+
+
+def parse_requirement(raw):
+    """Parse a strictest_requirement cell into (operator, value)."""
+    text = raw.strip()
+    # "contains X" phrasing
+    m = re.match(r"^contains\s+(.+)$", text, re.IGNORECASE)
+    if m:
+        return "contains", m.group(1).strip()
+    m = OP_PATTERN.match(text)
+    if m:
+        op, value = OPERATOR_MAP[m.group(1)], m.group(2).strip()
+    else:
+        op, value = "=", text
+    # "vmx-19+" means "at least vmx-19"
+    if op == "=" and re.match(r"^\S+\+$", value):
+        op, value = ">=", value.rstrip("+")
+    # "false / nicht gesetzt" style cells: keep the actual value part
+    if " / " in value:
+        value = value.split(" / ", 1)[0].strip()
+    if op == "=" and value in VALUE_ALIASES:
+        op, value = VALUE_ALIASES[value]
+    return op, value
+
+
+def condition_type(key):
+    """Heuristic default for the symptom condition type."""
+    if key.startswith("security|") or key.startswith("ComplianceMetrics|"):
+        return "metric"
+    return "property"
+
+
+def slugify(text, max_len=90):
+    slug = re.sub(r"[^A-Za-z0-9]+", "-", text).strip("-")
+    return slug[:max_len].strip("-")
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--csv",
+        default="data/decision-matrix.csv",
+        help="Path to decision-matrix.csv",
+    )
+    parser.add_argument("--out", default="rules.js", help="Output file")
+    args = parser.parse_args()
+
+    rules = []
+    used_ids = set()
+    with open(args.csv, newline="", encoding="utf-8-sig") as fh:
+        for index, row in enumerate(csv.DictReader(fh), start=1):
+            resource = row["resource"].strip()
+            key = row["condition_key"].strip()
+            scg_id = row["scg_id"].strip()
+            op, value = parse_requirement(row["strictest_requirement"])
+            base = scg_id if scg_id and scg_id != "\u2013" else key
+            slug = slugify(base) or f"rule-{index}"
+            uid = f"SymptomDefinition-VCF-SEC-{slug}"
+            if uid in used_ids:
+                uid = f"{uid}-{index}"
+            used_ids.add(uid)
+            rules.append(
+                {
+                    "id": uid,
+                    "resource": resource,
+                    "adapterKind": ADAPTER_KIND.get(resource, "VMWARE"),
+                    "recommendation": RECOMMENDATION.get(
+                        ADAPTER_KIND.get(resource, "VMWARE"),
+                        "Recommendation-df-VMWARE-FixHardeningViolations",
+                    ),
+                    "scgId": "" if scg_id == "\u2013" else scg_id,
+                    "description": row["description"].strip(),
+                    "conditionKey": key,
+                    "type": condition_type(key),
+                    "operator": op,
+                    "value": value,
+                    "valueType": "numeric" if NUMERIC_PATTERN.match(value) else "string",
+                    "note": row.get("note", "").strip(),
+                }
+            )
+
+    payload = {
+        "source": args.csv,
+        "count": len(rules),
+        "rules": rules,
+    }
+    with open(args.out, "w", encoding="utf-8") as fh:
+        fh.write("// Generated by tools/build_rules.py - do not edit by hand.\n")
+        fh.write("const RULES_DATA = ")
+        json.dump(payload, fh, indent=2, ensure_ascii=False)
+        fh.write(";\n")
+    print(f"Wrote {len(rules)} rules to {args.out}")
+
+
+if __name__ == "__main__":
+    main()

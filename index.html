@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VCF Operations Scorecard Builder</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@cds/city@1.1.0/css/bundles/default.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@clr/ui@18.2.1/clr-ui.min.css">
+<style>
+  body { font-family: "Clarity City", Metropolis, "Avenir Next", "Helvetica Neue", Arial, sans-serif; }
+  .content-area { padding: 0.6rem 1rem 2rem; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: flex-end; margin: 0.6rem 0; }
+  .toolbar .clr-control-container { margin-top: 0; }
+  .toolbar label { font-weight: 600; display: block; margin-bottom: 0.1rem; }
+  .table-wrapper { max-height: 62vh; overflow: auto; border: 1px solid #ccc; border-radius: 3px; }
+  table.table { margin-top: 0; }
+  table.table thead th { position: sticky; top: 0; background: #fafafa; z-index: 2; box-shadow: 0 1px 0 #ccc; }
+  table.table td { vertical-align: middle; }
+  code.key { font-size: 0.55rem; word-break: break-all; }
+  .value-input { min-width: 12rem; }
+  .value-input.invalid { border-color: #c92100; }
+  tr.modified td { background: #eef6fc; }
+  tr.excluded td { opacity: 0.45; }
+  .row-actions { white-space: nowrap; }
+  .counts { margin-left: auto; display: flex; gap: 0.4rem; align-items: center; }
+  .note-icon { cursor: help; }
+  footer { margin-top: 1.2rem; color: #565656; font-size: 0.55rem; }
+  .card-block .btn { margin-right: 0.4rem; }
+  .settings-grid { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; }
+  .settings-grid .clr-input { min-width: 14rem; }
+</style>
+</head>
+<body>
+<header class="header header-1">
+  <div class="branding">
+    <span class="title">VCF Operations Scorecard Builder</span>
+  </div>
+  <div class="header-actions">
+    <span class="badge badge-gray">unofficial personal project</span>
+  </div>
+</header>
+
+<div class="main-container">
+  <div class="content-container">
+    <div class="content-area">
+
+      <div class="alert alert-info" role="alert">
+        <div class="alert-items">
+          <div class="alert-item static">
+            <div class="alert-icon-wrapper"><span class="alert-icon">&#9432;</span></div>
+            <span class="alert-text">
+              This is a personal, community project. It is <strong>not</strong> an official Broadcom product and is
+              <strong>not supported by Broadcom or its subsidiaries</strong>. Generated XML must be reviewed and tested
+              before importing into a production VMware Aria Operations environment.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Export settings</div>
+        <div class="card-block">
+          <div class="settings-grid">
+            <div>
+              <label for="scorecardName">Scorecard name</label>
+              <input type="text" id="scorecardName" class="clr-input" value="VCF Security Benchmark">
+            </div>
+            <div>
+              <label for="severity">Symptom severity</label>
+              <div class="clr-select-wrapper">
+                <select id="severity" class="clr-select">
+                  <option value="critical">Critical</option>
+                  <option value="immediate">Immediate</option>
+                  <option value="warning" selected>Warning</option>
+                  <option value="info">Info</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label for="idPrefix">Definition ID prefix</label>
+              <input type="text" id="idPrefix" class="clr-input" value="VCF-SEC">
+            </div>
+            <div>
+              <button id="downloadAlerts" class="btn btn-primary">Download Alert &amp; Symptom Definitions</button>
+              <button id="downloadScorecard" class="btn btn-outline">Download Compliance Scorecard</button>
+              <button id="resetAll" class="btn btn-link-danger">Reset all customizations</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div>
+          <label for="search">Search</label>
+          <input type="search" id="search" class="clr-input" placeholder="description, key, SCG ID&hellip;">
+        </div>
+        <div>
+          <label for="resourceFilter">Resource kind</label>
+          <div class="clr-select-wrapper">
+            <select id="resourceFilter" class="clr-select"><option value="">All</option></select>
+          </div>
+        </div>
+        <div class="clr-checkbox-wrapper">
+          <input type="checkbox" id="modifiedOnly">
+          <label for="modifiedOnly">modified only</label>
+        </div>
+        <div>
+          <button id="includeFiltered" class="btn btn-sm btn-outline">Include filtered</button>
+          <button id="excludeFiltered" class="btn btn-sm btn-outline">Exclude filtered</button>
+        </div>
+        <div class="counts">
+          <span class="label label-blue"><span id="countIncluded">0</span> included</span>
+          <span class="label label-purple"><span id="countModified">0</span> modified</span>
+          <span class="label"><span id="countTotal">0</span> rules</span>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="table table-compact">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Resource</th>
+              <th>SCG ID</th>
+              <th>Description</th>
+              <th>Condition key</th>
+              <th>Type</th>
+              <th>Operator</th>
+              <th>Value</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="rulesBody"></tbody>
+        </table>
+      </div>
+
+      <footer>
+        Rule defaults follow the strictest requirement across the
+        <a href="https://www.vmware.com/resources/hardening-guides" target="_blank" rel="noopener">vSphere 8 Security Configuration Guide</a>
+        and the ISO 27001 compliance check for VCF Operations from the
+        <a href="https://vcf.broadcom.com/vsc/" target="_blank" rel="noopener">VCF Solutions Catalog</a>.
+        Customizations are stored locally in your browser only.
+        Personal project &mdash; not supported by Broadcom or its subsidiaries.
+      </footer>
+
+    </div>
+  </div>
+</div>
+
+<script src="rules.js"></script>
+<script>
+"use strict";
+
+const OPERATORS = ["=", "!=", "<", "<=", ">", ">=", "contains", "regex"];
+const NUMERIC_RE = /^-?\d+(\.\d+)?$/;
+const STORE_KEY = "vcf-ops-scorecard-builder.v1";
+
+const RULES = RULES_DATA.rules;
+const state = {
+  settings: { scorecardName: "VCF Security Benchmark", severity: "warning", idPrefix: "VCF-SEC" },
+  overrides: {}, // id -> { included?, operator?, value?, type? }
+};
+
+const RECOMMENDATION_TEXT = {
+  "Recommendation-df-VMWARE-FixHardeningViolations":
+    'Fix the vSphere Security Configuration Guide Rules Violations according to the recommendations available at <a href="http://www.vmware.com/security/hardening-guides.html" target="_blank">vSphere Security Configuration Guide</a>.',
+  "Recommendation-df-NSX-Security-Guidelines":
+    'Fix the NSX Security Configuration Guide Rules Violations according to the recommendations available at <a href="https://www.vmware.com/security/hardening-guides.html" target="_blank">NSX Security Configuration Guide</a>',
+  "Recommendation-df-VirtualAndPhysicalSANAdapter-FixHardeningViolations":
+    'Fix the vSphere Security Configuration Guide Rules Violations according to the recommendations available at <a href="http://www.vmware.com/security/hardening-guides.html" target="_blank">vSphere Security Configuration Guide</a>.',
+};
+
+// ---------- state helpers ----------
+
+function effective(rule) {
+  const o = state.overrides[rule.id] || {};
+  return {
+    included: o.included !== undefined ? o.included : true,
+    operator: o.operator !== undefined ? o.operator : rule.operator,
+    value: o.value !== undefined ? o.value : rule.value,
+    type: o.type !== undefined ? o.type : rule.type,
+  };
+}
+
+function isModified(rule) {
+  const o = state.overrides[rule.id];
+  if (!o) return false;
+  return (
+    (o.included !== undefined && o.included !== true) ||
+    (o.operator !== undefined && o.operator !== rule.operator) ||
+    (o.value !== undefined && o.value !== rule.value) ||
+    (o.type !== undefined && o.type !== rule.type)
+  );
+}
+
+function setOverride(id, patch) {
+  const o = Object.assign({}, state.overrides[id], patch);
+  // drop keys back at default so "modified" detection stays accurate
+  const rule = RULES.find(r => r.id === id);
+  if (o.included === true) delete o.included;
+  if (o.operator === rule.operator) delete o.operator;
+  if (o.value === rule.value) delete o.value;
+  if (o.type === rule.type) delete o.type;
+  if (Object.keys(o).length === 0) delete state.overrides[id];
+  else state.overrides[id] = o;
+  save();
+}
+
+function save() {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify(state));
+  } catch (e) { /* storage unavailable - ignore */ }
+}
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (parsed.settings) Object.assign(state.settings, parsed.settings);
+    if (parsed.overrides) state.overrides = parsed.overrides;
+  } catch (e) { /* corrupt state - ignore */ }
+}
+
+// ---------- rendering ----------
+
+const tbody = document.getElementById("rulesBody");
+const rowById = new Map();
+
+function buildTable() {
+  const frag = document.createDocumentFragment();
+  for (const rule of RULES) {
+    const tr = document.createElement("tr");
+    tr.dataset.id = rule.id;
+
+    // include checkbox
+    const tdInc = document.createElement("td");
+    const cbWrap = document.createElement("div");
+    cbWrap.className = "clr-checkbox-wrapper";
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.id = "inc-" + rule.id;
+    cb.addEventListener("change", () => {
+      setOverride(rule.id, { included: cb.checked });
+      refreshRow(rule);
+      updateCounts();
+    });
+    const cbLabel = document.createElement("label");
+    cbLabel.htmlFor = cb.id;
+    cbWrap.append(cb, cbLabel);
+    tdInc.append(cbWrap);
+
+    const tdRes = document.createElement("td");
+    tdRes.textContent = rule.resource;
+
+    const tdScg = document.createElement("td");
+    tdScg.textContent = rule.scgId || "–";
+
+    const tdDesc = document.createElement("td");
+    tdDesc.textContent = rule.description;
+    if (rule.note) {
+      const icon = document.createElement("span");
+      icon.className = "note-icon";
+      icon.title = "Decision matrix note: " + rule.note;
+      icon.textContent = " ⓘ";
+      tdDesc.append(icon);
+    }
+
+    const tdKey = document.createElement("td");
+    const code = document.createElement("code");
+    code.className = "key";
+    code.textContent = rule.conditionKey;
+    tdKey.append(code);
+
+    const tdType = document.createElement("td");
+    const typeWrap = document.createElement("div");
+    typeWrap.className = "clr-select-wrapper";
+    const typeSel = document.createElement("select");
+    typeSel.className = "clr-select";
+    for (const t of ["property", "metric"]) {
+      const opt = document.createElement("option");
+      opt.value = t; opt.textContent = t;
+      typeSel.append(opt);
+    }
+    typeSel.addEventListener("change", () => {
+      setOverride(rule.id, { type: typeSel.value });
+      refreshRow(rule);
+      updateCounts();
+    });
+    typeWrap.append(typeSel);
+    tdType.append(typeWrap);
+
+    const tdOp = document.createElement("td");
+    const opWrap = document.createElement("div");
+    opWrap.className = "clr-select-wrapper";
+    const opSel = document.createElement("select");
+    opSel.className = "clr-select";
+    for (const op of OPERATORS) {
+      const opt = document.createElement("option");
+      opt.value = op; opt.textContent = op;
+      opSel.append(opt);
+    }
+    opSel.addEventListener("change", () => {
+      setOverride(rule.id, { operator: opSel.value });
+      refreshRow(rule);
+      updateCounts();
+    });
+    opWrap.append(opSel);
+    tdOp.append(opWrap);
+
+    const tdVal = document.createElement("td");
+    const valInput = document.createElement("input");
+    valInput.type = "text";
+    valInput.className = "clr-input value-input";
+    valInput.addEventListener("input", () => {
+      setOverride(rule.id, { value: valInput.value });
+      refreshRow(rule);
+      updateCounts();
+    });
+    tdVal.append(valInput);
+
+    const tdAct = document.createElement("td");
+    tdAct.className = "row-actions";
+    const modBadge = document.createElement("span");
+    modBadge.className = "badge badge-purple";
+    modBadge.textContent = "modified";
+    const resetBtn = document.createElement("button");
+    resetBtn.className = "btn btn-sm btn-link";
+    resetBtn.textContent = "reset";
+    resetBtn.title = "Reset this rule to the strictest-requirement default";
+    resetBtn.addEventListener("click", () => {
+      delete state.overrides[rule.id];
+      save();
+      refreshRow(rule);
+      updateCounts();
+      applyFilter();
+    });
+    tdAct.append(modBadge, resetBtn);
+
+    tr.append(tdInc, tdRes, tdScg, tdDesc, tdKey, tdType, tdOp, tdVal, tdAct);
+    frag.append(tr);
+    rowById.set(rule.id, { tr, cb, typeSel, opSel, valInput, modBadge, resetBtn });
+  }
+  tbody.append(frag);
+  for (const rule of RULES) refreshRow(rule);
+  updateCounts();
+}
+
+function refreshRow(rule) {
+  const eff = effective(rule);
+  const els = rowById.get(rule.id);
+  const modified = isModified(rule);
+  els.cb.checked = eff.included;
+  els.typeSel.value = eff.type;
+  els.opSel.value = eff.operator;
+  if (els.valInput.value !== eff.value) els.valInput.value = eff.value;
+  els.valInput.classList.toggle("invalid", eff.value.trim() === "");
+  els.tr.classList.toggle("modified", modified);
+  els.tr.classList.toggle("excluded", !eff.included);
+  els.modBadge.style.display = modified ? "" : "none";
+  els.resetBtn.style.display = modified ? "" : "none";
+}
+
+function updateCounts() {
+  let included = 0, modified = 0;
+  for (const rule of RULES) {
+    if (effective(rule).included) included++;
+    if (isModified(rule)) modified++;
+  }
+  document.getElementById("countIncluded").textContent = included;
+  document.getElementById("countModified").textContent = modified;
+  document.getElementById("countTotal").textContent = RULES.length;
+  const none = included === 0;
+  document.getElementById("downloadAlerts").disabled = none;
+  document.getElementById("downloadScorecard").disabled = none;
+}
+
+// ---------- filtering ----------
+
+function filteredRules() {
+  const q = document.getElementById("search").value.trim().toLowerCase();
+  const res = document.getElementById("resourceFilter").value;
+  const modOnly = document.getElementById("modifiedOnly").checked;
+  return RULES.filter(rule => {
+    if (res && rule.resource !== res) return false;
+    if (modOnly && !isModified(rule)) return false;
+    if (q) {
+      const hay = (rule.description + " " + rule.conditionKey + " " + rule.scgId + " " + rule.resource).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function applyFilter() {
+  const visible = new Set(filteredRules().map(r => r.id));
+  for (const rule of RULES) {
+    rowById.get(rule.id).tr.style.display = visible.has(rule.id) ? "" : "none";
+  }
+}
+
+// ---------- XML generation ----------
+
+function esc(text) {
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function slug(text) {
+  return String(text).replace(/[^A-Za-z0-9]+/g, "-").replace(/^-+|-+$/g, "").toUpperCase();
+}
+
+function prefix() {
+  const p = state.settings.idPrefix.trim() || "VCF-SEC";
+  return p.replace(/[^A-Za-z0-9-]/g, "-");
+}
+
+function includedRules() {
+  return RULES.filter(r => effective(r).included);
+}
+
+function symptomId(rule) {
+  return rule.id.replace("SymptomDefinition-VCF-SEC-", "SymptomDefinition-" + prefix() + "-");
+}
+
+function buildAlertsXml() {
+  const rules = includedRules();
+  const byResource = new Map();
+  for (const rule of rules) {
+    if (!byResource.has(rule.resource)) byResource.set(rule.resource, []);
+    byResource.get(rule.resource).push(rule);
+  }
+
+  const L = [];
+  L.push('<?xml version="1.0" encoding="UTF-8"?><alertContent>');
+  L.push('    <AlertDefinitions>');
+  for (const [resource, group] of byResource) {
+    const adapter = group[0].adapterKind;
+    const rec = group[0].recommendation;
+    const alertId = "AlertDefinition-" + prefix() + "-" + slug(resource);
+    const name = "VCF Security Benchmark violation - " + resource;
+    const desc = "This " + resource + " violates one or more rules of the custom VCF security benchmark.";
+    L.push('        <AlertDefinition adapterKind="' + esc(adapter) + '" description="' + esc(desc) +
+      '" disableInBasePolicy="true" id="' + esc(alertId) + '" name="' + esc(name) +
+      '" resourceKind="' + esc(resource) + '" subType="21" type="16">');
+    L.push('            <State severity="automatic">');
+    L.push('                <SymptomSet applyOn="self" operator="or">');
+    for (const rule of group) {
+      L.push('                    <Symptom ref="' + esc(symptomId(rule)) + '"/>');
+    }
+    L.push('                </SymptomSet>');
+    L.push('                <Impact key="risk" type="badge"/>');
+    L.push('                <Recommendations>');
+    L.push('                    <Recommendation priority="1" ref="' + esc(rec) + '"/>');
+    L.push('                </Recommendations>');
+    L.push('            </State>');
+    L.push('        </AlertDefinition>');
+  }
+  L.push('    </AlertDefinitions>');
+
+  L.push('    <SymptomDefinitions>');
+  for (const rule of rules) {
+    const eff = effective(rule);
+    const name = (rule.scgId ? rule.scgId + " - " : "") + rule.description;
+    const valueType = NUMERIC_RE.test(eff.value.trim()) ? "numeric" : "string";
+    L.push('        <SymptomDefinition adapterKind="' + esc(rule.adapterKind) +
+      '" disableInBasePolicy="true" id="' + esc(symptomId(rule)) + '" name="' + esc(name) +
+      '" resourceKind="' + esc(rule.resource) + '">');
+    L.push('            <State severity="' + esc(state.settings.severity) + '">');
+    L.push('                <Condition key="' + esc(rule.conditionKey) + '" operator="' + esc(eff.operator) +
+      '" thresholdType="static" type="' + esc(eff.type) + '" value="' + esc(eff.value) +
+      '" valueType="' + valueType + '"/>');
+    L.push('            </State>');
+    L.push('        </SymptomDefinition>');
+  }
+  L.push('    </SymptomDefinitions>');
+
+  const usedRecs = [...new Set(rules.map(r => r.recommendation))];
+  L.push('    <Recommendations>');
+  for (const key of usedRecs) {
+    L.push('        <Recommendation key="' + esc(key) + '">');
+    L.push('            <Description>' + esc(RECOMMENDATION_TEXT[key] || "Remediate the violating configuration.") + '</Description>');
+    L.push('        </Recommendation>');
+  }
+  L.push('    </Recommendations>');
+  L.push('</alertContent>');
+  return L.join("\n") + "\n";
+}
+
+function buildScorecardXml() {
+  const resources = [...new Set(includedRules().map(r => r.resource))];
+  const name = state.settings.scorecardName.trim() || "VCF Security Benchmark";
+  const L = [];
+  L.push('<?xml version="1.0" encoding="UTF-8"?><scorecardContent>');
+  L.push('    <ComplianceScorecards>');
+  L.push('        <ComplianceScorecard description="Custom VCF security benchmark scorecard" name="' + esc(name) + '" type="CUSTOM">');
+  L.push('            <AlertDefinitionIds>');
+  for (const res of resources) {
+    L.push('                <AlertDefinitionId id="AlertDefinition-' + esc(prefix()) + '-' + esc(slug(res)) + '"/>');
+  }
+  L.push('            </AlertDefinitionIds>');
+  L.push('        </ComplianceScorecard>');
+  L.push('    </ComplianceScorecards>');
+  L.push('</scorecardContent>');
+  return L.join("\n") + "\n";
+}
+
+function download(filename, content) {
+  const blob = new Blob([content], { type: "application/xml;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+// ---------- wiring ----------
+
+function init() {
+  load();
+  document.getElementById("scorecardName").value = state.settings.scorecardName;
+  document.getElementById("severity").value = state.settings.severity;
+  document.getElementById("idPrefix").value = state.settings.idPrefix;
+
+  document.getElementById("scorecardName").addEventListener("input", e => {
+    state.settings.scorecardName = e.target.value; save();
+  });
+  document.getElementById("severity").addEventListener("change", e => {
+    state.settings.severity = e.target.value; save();
+  });
+  document.getElementById("idPrefix").addEventListener("input", e => {
+    state.settings.idPrefix = e.target.value; save();
+  });
+
+  const resources = [...new Set(RULES.map(r => r.resource))].sort();
+  const resSel = document.getElementById("resourceFilter");
+  for (const res of resources) {
+    const opt = document.createElement("option");
+    opt.value = res; opt.textContent = res;
+    resSel.append(opt);
+  }
+
+  buildTable();
+  applyFilter();
+
+  document.getElementById("search").addEventListener("input", applyFilter);
+  resSel.addEventListener("change", applyFilter);
+  document.getElementById("modifiedOnly").addEventListener("change", applyFilter);
+
+  document.getElementById("includeFiltered").addEventListener("click", () => {
+    for (const rule of filteredRules()) { setOverride(rule.id, { included: true }); refreshRow(rule); }
+    updateCounts();
+  });
+  document.getElementById("excludeFiltered").addEventListener("click", () => {
+    for (const rule of filteredRules()) { setOverride(rule.id, { included: false }); refreshRow(rule); }
+    updateCounts();
+  });
+
+  document.getElementById("resetAll").addEventListener("click", () => {
+    if (!confirm("Discard all customizations and restore the strictest-requirement defaults?")) return;
+    state.overrides = {};
+    state.settings = { scorecardName: "VCF Security Benchmark", severity: "warning", idPrefix: "VCF-SEC" };
+    save();
+    document.getElementById("scorecardName").value = state.settings.scorecardName;
+    document.getElementById("severity").value = state.settings.severity;
+    document.getElementById("idPrefix").value = state.settings.idPrefix;
+    for (const rule of RULES) refreshRow(rule);
+    updateCounts();
+    applyFilter();
+  });
+
+  document.getElementById("downloadAlerts").addEventListener("click", () =>
+    download("Alert-and-SymptomDefinitions.xml", buildAlertsXml()));
+  document.getElementById("downloadScorecard").addEventListener("click", () =>
+    download("Compliance-Scorecard.xml", buildScorecardXml()));
+}
+
+init();
+</script>
+</body>
+</html>
