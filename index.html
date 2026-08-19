@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VCF Operations Scorecard Builder</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@cds/city@1.1.0/css/bundles/default.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@clr/ui@18.2.1/clr-ui.min.css">
+<link rel="stylesheet" href="assets/vendor/city-1.1.0/city.css">
+<link rel="stylesheet" href="assets/vendor/clr-ui-18.2.1/clr-ui.min.css">
 <style>
   body { font-family: "Clarity City", Metropolis, "Avenir Next", "Helvetica Neue", Arial, sans-serif; }
   .content-area { padding: 0.6rem 1rem 2rem; }
@@ -23,7 +23,12 @@
   tr.excluded td { opacity: 0.45; }
   .row-actions { white-space: nowrap; }
   .counts { margin-left: auto; display: flex; gap: 0.4rem; align-items: center; }
-  .note-icon { cursor: help; }
+  /* visually-hidden utility for accessible names of icon-only controls */
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .note-trigger { padding: 0 0.1rem; margin-left: 0.15rem; border: none; background: none;
+    color: #00567a; font-size: 0.75rem; line-height: 1; cursor: help; vertical-align: baseline; }
+  .note-trigger:focus { outline: 2px solid #00567a; outline-offset: 1px; border-radius: 2px; }
   footer { margin-top: 1.2rem; color: #565656; font-size: 0.55rem; }
   .card-block .btn { margin-right: 0.4rem; }
   .settings-grid { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; }
@@ -90,7 +95,7 @@
       </div>
 
       <div class="toolbar">
-        <div>
+        <div role="search">
           <label for="search">Search</label>
           <input type="search" id="search" class="clr-input" placeholder="description, key, SCG ID&hellip;">
         </div>
@@ -108,7 +113,7 @@
           <button id="includeFiltered" class="btn btn-sm btn-outline">Include filtered</button>
           <button id="excludeFiltered" class="btn btn-sm btn-outline">Exclude filtered</button>
         </div>
-        <div class="counts">
+        <div class="counts" aria-live="polite">
           <span class="label label-blue"><span id="countIncluded">0</span> included</span>
           <span class="label label-purple"><span id="countModified">0</span> modified</span>
           <span class="label"><span id="countTotal">0</span> rules</span>
@@ -119,15 +124,15 @@
         <table class="table table-compact">
           <thead>
             <tr>
-              <th></th>
-              <th>Resource</th>
-              <th>SCG ID</th>
-              <th>Description</th>
-              <th>Condition key</th>
-              <th>Type</th>
-              <th>Operator</th>
-              <th>Value</th>
-              <th></th>
+              <th scope="col"><span class="sr-only">Include rule</span></th>
+              <th scope="col">Resource</th>
+              <th scope="col">SCG ID</th>
+              <th scope="col">Description</th>
+              <th scope="col">Condition key</th>
+              <th scope="col">Type</th>
+              <th scope="col">Operator</th>
+              <th scope="col">Value</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody id="rulesBody"></tbody>
@@ -153,9 +158,18 @@
 
 const OPERATORS = ["=", "!=", "<", "<=", ">", ">=", "contains", "regex"];
 const NUMERIC_RE = /^-?\d+(\.\d+)?$/;
-const STORE_KEY = "vcf-ops-scorecard-builder.v1";
+const STORE_KEY_V1 = "vcf-ops-scorecard-builder.v1";
+const STORE_KEY = "vcf-ops-scorecard-builder.v2";
+const STORE_BACKUP_KEY = STORE_KEY + ".backup";
+const SAVE_DEBOUNCE_MS = 300;
 
-const RULES = RULES_DATA.rules;
+// rules.js bootstrap guard: if the data file never loaded, RULES stays null and
+// init() is skipped in favour of a visible error card (see bottom of this script).
+const RULES = typeof RULES_DATA !== "undefined" && RULES_DATA && Array.isArray(RULES_DATA.rules)
+  ? RULES_DATA.rules
+  : null;
+// id -> rule, built once; replaces the per-edit RULES.find() linear scan
+const ruleById = new Map(RULES ? RULES.map(r => [r.id, r]) : []);
 const state = {
   settings: { scorecardName: "VCF Security Benchmark", severity: "warning", idPrefix: "VCF-SEC" },
   overrides: {}, // id -> { included?, operator?, value?, type? }
@@ -196,7 +210,8 @@ function isModified(rule) {
 function setOverride(id, patch) {
   const o = Object.assign({}, state.overrides[id], patch);
   // drop keys back at default so "modified" detection stays accurate
-  const rule = RULES.find(r => r.id === id);
+  const rule = ruleById.get(id);
+  if (!rule) return; // defensive: overrides are keyed by rendered rule ids, but never deref null
   if (o.included === true) delete o.included;
   if (o.operator === rule.operator) delete o.operator;
   if (o.value === rule.value) delete o.value;
@@ -206,20 +221,95 @@ function setOverride(id, patch) {
   save();
 }
 
+function writeStore(payload) {
+  // every successful save also refreshes a backup copy of the last valid state
+  localStorage.setItem(STORE_KEY, payload);
+  localStorage.setItem(STORE_BACKUP_KEY, payload);
+}
+
+let saveTimer = null;
+let savePending = false;
+
 function save() {
+  // debounced (300ms trailing): one write per burst of edits, not one per keystroke
+  savePending = true;
+  if (saveTimer !== null) clearTimeout(saveTimer);
+  saveTimer = setTimeout(flushSave, SAVE_DEBOUNCE_MS);
+}
+
+function flushSave() {
+  // write pending changes synchronously (downloads, beforeunload, tab hidden)
+  if (saveTimer !== null) { clearTimeout(saveTimer); saveTimer = null; }
+  if (!savePending) return;
+  savePending = false;
   try {
-    localStorage.setItem(STORE_KEY, JSON.stringify(state));
+    writeStore(JSON.stringify(state));
   } catch (e) { /* storage unavailable - ignore */ }
 }
 
-function load() {
+function readStore(key) {
+  // parsed payload, or null when the key is absent or its JSON is corrupt
+  const raw = localStorage.getItem(key);
+  if (raw === null) return null;
   try {
-    const raw = localStorage.getItem(STORE_KEY);
-    if (!raw) return;
-    const parsed = JSON.parse(raw);
+    return JSON.parse(raw);
+  } catch (e) {
+    return null;
+  }
+}
+
+function showNotice(kind, html) {
+  // small clr-alert card at the top of the content area
+  const area = document.querySelector(".content-area");
+  if (!area) return;
+  const el = document.createElement("div");
+  el.className = "alert alert-" + kind;
+  el.setAttribute("role", "alert");
+  el.innerHTML =
+    '<div class="alert-items"><div class="alert-item static">' +
+    '<div class="alert-icon-wrapper"><span class="alert-icon">&#9432;</span></div>' +
+    '<span class="alert-text">' + html + "</span>" +
+    "</div></div>";
+  const anchor = area.querySelector(".card");
+  if (anchor) area.insertBefore(el, anchor);
+  else area.prepend(el);
+}
+
+function load() {
+  let parsed = null;
+  let corrupt = false;
+
+  if (localStorage.getItem(STORE_KEY) === null && localStorage.getItem(STORE_KEY_V1) !== null) {
+    // storage key bumped to v2: migrate a v1 payload forward exactly once
+    parsed = readStore(STORE_KEY_V1);
+    if (parsed !== null) {
+      try {
+        writeStore(JSON.stringify(parsed));
+        localStorage.removeItem(STORE_KEY_V1);
+      } catch (e) { /* storage unavailable - keep v1 as the source */ }
+    } else {
+      corrupt = true; // v1 present but unreadable
+    }
+  }
+
+  if (parsed === null && localStorage.getItem(STORE_KEY) !== null) {
+    parsed = readStore(STORE_KEY);
+    if (parsed === null) {
+      corrupt = true; // current payload is corrupt - try the backup before giving up
+      parsed = readStore(STORE_BACKUP_KEY);
+    }
+  }
+
+  if (parsed !== null) {
+    if (corrupt) {
+      try { writeStore(JSON.stringify(parsed)); } catch (e) { /* storage unavailable */ }
+      showNotice("warning", "Restored your last saved customizations from backup.");
+    }
     if (parsed.settings) Object.assign(state.settings, parsed.settings);
     if (parsed.overrides) state.overrides = parsed.overrides;
-  } catch (e) { /* corrupt state - ignore */ }
+  } else if (corrupt) {
+    showNotice("warning", "Saved customizations could not be restored and were reset.");
+  }
 }
 
 // ---------- rendering ----------
@@ -247,6 +337,10 @@ function buildTable() {
     });
     const cbLabel = document.createElement("label");
     cbLabel.htmlFor = cb.id;
+    const cbLabelText = document.createElement("span");
+    cbLabelText.className = "sr-only";
+    cbLabelText.textContent = "Include rule: " + rule.conditionKey;
+    cbLabel.append(cbLabelText);
     cbWrap.append(cb, cbLabel);
     tdInc.append(cbWrap);
 
@@ -259,11 +353,20 @@ function buildTable() {
     const tdDesc = document.createElement("td");
     tdDesc.textContent = rule.description;
     if (rule.note) {
-      const icon = document.createElement("span");
-      icon.className = "note-icon";
-      icon.title = "Decision matrix note: " + rule.note;
-      icon.textContent = " ⓘ";
-      tdDesc.append(icon);
+      const noteId = "note-" + rule.id;
+      const noteBtn = document.createElement("button");
+      noteBtn.type = "button";
+      noteBtn.className = "note-trigger";
+      noteBtn.setAttribute("aria-label", "Note");
+      noteBtn.setAttribute("aria-describedby", noteId);
+      // Sighted mouse users can't read the sr-only note below; expose it as a tooltip too.
+      noteBtn.title = "Decision matrix note: " + rule.note;
+      noteBtn.textContent = "ⓘ";
+      const noteText = document.createElement("div");
+      noteText.id = noteId;
+      noteText.className = "sr-only";
+      noteText.textContent = "Decision matrix note: " + rule.note;
+      tdDesc.append(noteBtn, noteText);
     }
 
     const tdKey = document.createElement("td");
@@ -524,6 +627,9 @@ function download(filename, content) {
 
 function init() {
   load();
+  // never lose a pending debounced write on navigation or tab switch
+  window.addEventListener("beforeunload", flushSave);
+  document.addEventListener("visibilitychange", () => { if (document.hidden) flushSave(); });
   document.getElementById("scorecardName").value = state.settings.scorecardName;
   document.getElementById("severity").value = state.settings.severity;
   document.getElementById("idPrefix").value = state.settings.idPrefix;
@@ -575,13 +681,28 @@ function init() {
     applyFilter();
   });
 
-  document.getElementById("downloadAlerts").addEventListener("click", () =>
-    download("Alert-and-SymptomDefinitions.xml", buildAlertsXml()));
-  document.getElementById("downloadScorecard").addEventListener("click", () =>
-    download("Compliance-Scorecard.xml", buildScorecardXml()));
+  document.getElementById("downloadAlerts").addEventListener("click", () => {
+    flushSave(); // don't lose pending debounced writes across the download
+    download("Alert-and-SymptomDefinitions.xml", buildAlertsXml());
+  });
+  document.getElementById("downloadScorecard").addEventListener("click", () => {
+    flushSave();
+    download("Compliance-Scorecard.xml", buildScorecardXml());
+  });
 }
 
-init();
+if (RULES) {
+  init();
+} else {
+  // rules.js missing or corrupt: fail visibly, render nothing half-baked
+  showNotice("danger",
+    "<strong>Rule data failed to load</strong> &mdash; the rules.js file is missing or corrupt. " +
+    "Restore rules.js next to index.html and reload this page.");
+  for (const sel of [".card", ".toolbar", ".table-wrapper"]) {
+    const el = document.querySelector(".content-area " + sel);
+    if (el) el.style.display = "none";
+  }
+}
 </script>
 </body>
 </html>
