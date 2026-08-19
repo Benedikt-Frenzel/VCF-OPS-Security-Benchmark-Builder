@@ -71,13 +71,24 @@ COMPARISON_OPERATORS = {"=", "!=", "<", "<=", ">", ">="}
 OP_PATTERN = re.compile(r"^(<=|>=|[=\u2260<\u2264>\u2265])\s*(.+)$", re.DOTALL)
 NUMERIC_PATTERN = re.compile(r"^-?\d+(\.\d+)?$")
 
-# Timeout rows carry a bare reference value in `strictest_requirement`. Per the
-# matrix notes the symptom reports "< reference": a timeout below the reference
-# (including 0 = disabled) is the violation.
-TIMEOUT_CONDITION_KEYS = frozenset(
+# Timeout rows carry a bare reference value in `strictest_requirement`, but the
+# violation direction differs per key:
+# - dcui_timeout / host_client_session_timeout: the matrix note says the symptom
+#   reports "< reference" (a timeout below the reference, including 0 = disabled,
+#   is the violation).
+# - shell_timeout / shell_interactive_timeout: the matrix says "Allowed range
+#   1-900 s; reference 900" and the description names "> 15 minutes" as the
+#   violation, so the violation is "> reference". The single condition does not
+#   cover the baseline's '= 0.0' (disabled) variant - accepted blind spot,
+#   documented in tools/compare_baseline.py.
+TIMEOUT_LT_REFERENCE_KEYS = frozenset(
     {
         "config|security|dcui_timeout",
         "config|security|host_client_session_timeout",
+    }
+)
+TIMEOUT_GT_REFERENCE_KEYS = frozenset(
+    {
         "config|security|shell_timeout",
         "config|security|shell_interactive_timeout",
     }
@@ -150,6 +161,11 @@ def vmx_violation_regex(min_version):
 
     Mirrors the baseline export: the requirement `vmx-19+` becomes
     `vmx-[1-9]|vmx-1[0-8]`, which matches vmx-4 through vmx-18 (issue #1).
+
+    The regex is deliberately unanchored and byte-identical to the baseline
+    export: under substring matching `vmx-[1-9]` would also match inside
+    `vmx-19`, so this assumes Aria Operations full-string-matches the value.
+    Keep it identical to the baseline unless Aria's semantics change.
     """
     n = int(min_version)
     if not 11 <= n <= 20:
@@ -208,14 +224,23 @@ def parse_requirement(raw, condition_key=""):
     # Desired state -> violation.
     op = INVERTED_OPERATOR[op]
 
-    # Timeout rows: a bare reference value means "at least <reference> seconds";
-    # 0 (disabled) must fire as well, so the violation is "< reference"
-    # (see the matrix notes; matches the baseline export).
-    if condition_key in TIMEOUT_CONDITION_KEYS and op == "!=":
+    # Timeout rows: a bare reference value means "at least <reference> seconds".
+    # dcui/host_client: per the matrix note the violation is "< reference"
+    # (0 = disabled also fires). shell_*: per the matrix note ("allowed range
+    # 1-900 s") and description ("more than 15 minutes") the violation is
+    # "> reference"; the baseline's '= 0.0' (disabled) variant is an accepted
+    # blind spot of the single-condition model.
+    if condition_key in TIMEOUT_LT_REFERENCE_KEYS and op == "!=":
         op = "<"
         note = (
             "timeout reference value; the violation is '<' reference "
             "(0 = disabled also fires)"
+        )
+    elif condition_key in TIMEOUT_GT_REFERENCE_KEYS and op == "!=":
+        op = ">"
+        note = (
+            "timeout reference value; the violation is '>' reference "
+            "(allowed range 1-reference; the disabled state '= 0' is not covered)"
         )
     else:
         note = None
