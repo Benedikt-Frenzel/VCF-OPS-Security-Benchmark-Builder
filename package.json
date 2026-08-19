@@ -1,0 +1,16 @@
+{
+  "name": "vcf-ops-security-benchmark-builder",
+  "version": "1.0.0",
+  "private": true,
+  "description": "VCF Operations Scorecard Builder - development/test tooling (the app itself is static index.html + rules.js)",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "jsdom": "30.0.1"
+  }
+}

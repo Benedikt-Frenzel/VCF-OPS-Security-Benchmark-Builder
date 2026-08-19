@@ -1,0 +1,1232 @@
+{
+  "ComplianceMetrics|APILimits|Client_API_Concurrency_Limit": [
+    [
+      "!=",
+      "40.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "ComplianceMetrics|APILimits|Client_API_Rate_Limit": [
+    [
+      "!=",
+      "100.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "ComplianceMetrics|HttpSessionTimeOut": [
+    [
+      "!=",
+      "1800.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "ComplianceMetrics|LoggingServerWithLogLevelNotInfoFound": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "ComplianceMetrics|NumberOfLoggingServers": [
+    [
+      "=",
+      "0.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "ComplianceMetrics|ServiceName": [
+    [
+      "=",
+      "syslog",
+      "string",
+      "property"
+    ]
+  ],
+  "ConfigurationProperties|vsan|encryption": [
+    [
+      "!=",
+      "Enabled",
+      "string",
+      "property"
+    ]
+  ],
+  "configuration|vsan|encryption": [
+    [
+      "!=",
+      "Enabled",
+      "string",
+      "property"
+    ]
+  ],
+  "config|boot_options_efi_secure_boot_enabled": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|extraConfig|mem_tps_share": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|health_check_config|health_check_config_teaming": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|health_check_config|health_check_config_vlan_mtu": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|migrateEncryption": [
+    [
+      "!=",
+      "required",
+      "string",
+      "property"
+    ]
+  ],
+  "config|policies|override|block_override_allowed": [
+    [
+      "!=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|policies|override|ipfix_override_allowed": [
+    [
+      "!=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|policies|override|live_port_moving_allowed": [
+    [
+      "!=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|policies|override|network_resourcepool_moving_override_allowed": [
+    [
+      "!=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|policies|override|port_config_reset_at_disconnect": [
+    [
+      "!=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|policies|override|security_policy_override_allowed": [
+    [
+      "!=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|policies|override|shaping_override_allowed": [
+    [
+      "!=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|policies|override|uplink_teaming_override_allowed": [
+    [
+      "!=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|policies|override|vendor_config_override_allowed": [
+    [
+      "!=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|policies|override|vlan_override_allowed": [
+    [
+      "!=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|policies|security|allow_promiscuous": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|policies|security|forged_transmits": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|policies|security|mac_changes": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|dcui_access": [
+    [
+      "=",
+      "none",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|dcui_timeout": [
+    [
+      "<",
+      "600.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "config|security|disable_autoinstall": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_console_copy": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_console_dnd": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_console_paste": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_device_interaction_connect": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_device_interaction_edit": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_disk_shrinking_shrink": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_disk_shrinking_wiper": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_hgfs": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_independent_nonpersistent": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_unexposed_features_autologon": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_unexposed_features_biosbbs": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_unexposed_features_getcreds": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_unexposed_features_launchmenu": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_unexposed_features_memsfss": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_unexposed_features_protocolhandler": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_unexposed_features_shellaction": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_unexposed_features_toporequest": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_unexposed_features_trashfolderstate": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_unexposed_features_trayicon": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_unexposed_features_unity": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_unexposed_features_unity_interlock": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_unexposed_features_unity_taskbar": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_unexposed_features_unity_unityactive": [
+    [
+      "!=",
+      "none",
+      "string",
+      "property"
+    ],
+    [
+      "!=",
+      "true",
+      "string",
+      "property"
+    ],
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_unexposed_features_unity_windowcontents": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_unexposed_features_unitypush": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_unexposed_features_versionget": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_unexposed_features_versionset": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disable_vix_messages": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disconnect_devices_cd": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disconnect_devices_floppy": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disconnect_devices_parallel": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disconnect_devices_serial": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disconnect_devices_virtualahcicontroller": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disconnect_devices_virtualensoniq1371": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|disconnect_devices_virtualhdaudiocard": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|domain_membership_status": [
+    [
+      "!=",
+      "ok",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|dvfilter_bind_address": [
+    [
+      "!=",
+      "none",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|enable_ad_auth": [
+    [
+      "!=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|enable_auth_proxy": [
+    [
+      "=",
+      "0.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "config|security|enable_chap_auth": [
+    [
+      "!=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|enable_console_VNC": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|enable_console_gui_options": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|enable_host_info": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|enable_mob": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|enable_non_essential_3D_features": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|enable_vga_only_mode": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|execInstalledOnly": [
+    [
+      "!=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|firewallRule:Firewall Configured|servicesConfigured": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|firewallRule:NTP Client|allowedHosts": [
+    [
+      "=",
+      "All IP",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|firewallRule:services|servicesConfigured": [
+    [
+      "contains",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|has_lockdown_exception_users": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|host_agent_log_level": [
+    [
+      "!=",
+      "info",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|host_client_session_timeout": [
+    [
+      "<",
+      "900.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "config|security|imageConfig|acceptance_level_risk_profile_2": [
+    [
+      "!=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|imageConfig|acceptance_level_risk_profile_3": [
+    [
+      "!=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|issue": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|limit_console_connection": [
+    [
+      "!=",
+      "1.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "config|security|limit_log_number": [
+    [
+      ">",
+      "10.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "config|security|limit_log_size": [
+    [
+      "<",
+      "2048000.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "config|security|limit_setinfo_size": [
+    [
+      ">",
+      "1048576.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "config|security|lockdown|lockdown_mode": [
+    [
+      "=",
+      "lockdownDisabled",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|net_block_guest_bpdu": [
+    [
+      "!=",
+      "1.0",
+      "numeric",
+      "property"
+    ],
+    [
+      "=",
+      "0.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "config|security|network_filter_enable": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|ntpServer": [
+    [
+      "=",
+      "none",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|password_max_days": [
+    [
+      "!=",
+      "9999.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "config|security|pci_device_configured": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|security_account_lock_failures": [
+    [
+      "!=",
+      "5.0",
+      "numeric",
+      "property"
+    ],
+    [
+      "<",
+      "3.0",
+      "numeric",
+      "property"
+    ],
+    [
+      ">",
+      "3.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "config|security|security_account_unlock_time": [
+    [
+      "<",
+      "900.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "config|security|security_password_history": [
+    [
+      "<",
+      "5.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "config|security|security_password_quality_control": [
+    [
+      "!=",
+      "retry=3 min=disabled,15,15,15,15 max=64 similar=deny passphrase=3",
+      "string",
+      "property"
+    ],
+    [
+      "!=",
+      "retry=3 min=disabled,disabled,disabled,7,7",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|service:ESXi Shell|isRunning": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|service:ESXi Shell|policy": [
+    [
+      "!=",
+      "off",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|service:NTP Daemon|isRunning": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ],
+    [
+      "=",
+      "none",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|service:NTP Daemon|policy": [
+    [
+      "!=",
+      "on",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|service:SFCB service|isRunning": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|service:SFCB service|policy": [
+    [
+      "=",
+      "on",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|service:SLP Service|isRunning": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|service:SLP Service|policy": [
+    [
+      "=",
+      "on",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|service:SNMP Server|isRunning": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|service:SNMP Server|policy": [
+    [
+      "=",
+      "on",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|service:SSH|isRunning": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|service:SSH|policy": [
+    [
+      "!=",
+      "off",
+      "string",
+      "property"
+    ],
+    [
+      "=",
+      "on",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|shell_interactive_timeout": [
+    [
+      "=",
+      "0.0",
+      "numeric",
+      "property"
+    ],
+    [
+      ">",
+      "900.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "config|security|shell_timeout": [
+    [
+      "=",
+      "0.0",
+      "numeric",
+      "property"
+    ],
+    [
+      ">",
+      "900.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "config|security|suppressHyperthreadWarning": [
+    [
+      "!=",
+      "0.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "config|security|suppressShellWarning": [
+    [
+      "!=",
+      "0.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "config|security|syslog_dir": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|syslog_host": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ],
+    [
+      "=",
+      "none",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|tlsDisabledProtocols": [
+    [
+      "!=",
+      "sslv3,tlsv1,tlsv1.1",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|tools_guest_desktop_autolock": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|security|tps_share_force_salting": [
+    [
+      "!=",
+      "2.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "config|security|welcome_message": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "config|uplink": [
+    [
+      "!=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "config|version": [
+    [
+      "regex",
+      "vmx-[1-9]|vmx-1[0-2]",
+      "string",
+      "property"
+    ],
+    [
+      "regex",
+      "vmx-[1-9]|vmx-1[0-8]",
+      "string",
+      "property"
+    ]
+  ],
+  "config|vsan|encryption": [
+    [
+      "!=",
+      "Enabled",
+      "string",
+      "property"
+    ]
+  ],
+  "security|NtpServersCount": [
+    [
+      "<",
+      "3.0",
+      "numeric",
+      "metric"
+    ]
+  ],
+  "security|SshEnabled": [
+    [
+      "=",
+      "true",
+      "string",
+      "metric"
+    ]
+  ],
+  "summary|ComplianceMetrics|CLITimeOutInSeconds": [
+    [
+      "!=",
+      "600.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "summary|ComplianceMetrics|LDAPServerConfiguredWithLDAPS": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "summary|ComplianceMetrics|authPolicy|apiAuthPolicy|failed_auth_lockout_period": [
+    [
+      "!=",
+      "900.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "summary|ComplianceMetrics|authPolicy|apiAuthPolicy|max_auth_failures": [
+    [
+      "!=",
+      "3.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "summary|ComplianceMetrics|authPolicy|cliAuthPolicy|failed_auth_lockout_period": [
+    [
+      "!=",
+      "900.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "summary|ComplianceMetrics|authPolicy|cliAuthPolicy|max_auth_failures": [
+    [
+      "!=",
+      "3.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "summary|ComplianceMetrics|authPolicy|minimum_password_length": [
+    [
+      "!=",
+      "12.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "summary|ComplianceMetrics|backup_enabled": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ],
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "summary|ComplianceMetrics|backup_sftp_configured": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "summary|ComplianceMetrics|hardening_status": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "summary|ComplianceMetrics|tls_v1dot1_enabled": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "summary|nfcusessl": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "vc_appliance|hasAccessSSH": [
+    [
+      "=",
+      "true",
+      "string",
+      "property"
+    ]
+  ],
+  "vc_appliance|hasLoggingForwardingConfigs": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "vc_appliance|hasRecoveryBackupJobs": [
+    [
+      "=",
+      "false",
+      "string",
+      "property"
+    ]
+  ],
+  "vc_appliance|networkNICs": [
+    [
+      ">",
+      "1.0",
+      "numeric",
+      "property"
+    ]
+  ],
+  "vc_appliance|timeSyncMode": [
+    [
+      "!=",
+      "NTP",
+      "string",
+      "property"
+    ]
+  ],
+  "vsan|policy|compliance": [
+    [
+      "!=",
+      "Compliant",
+      "string",
+      "property"
+    ]
+  ]
+}
