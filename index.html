@@ -509,7 +509,10 @@ function updatePrefixWarning() {
       'Exports fall back to the default prefix "VCF-SEC".';
   } else {
     const upper = sanitized.toUpperCase();
-    const reserved = RESERVED_ID_PREFIXES.find(p => upper === p || upper.startsWith(p));
+    // match only on a token boundary: "ISO-9001" is reserved, "ISO9001" is not —
+    // a mere substring prefix (ISO9001-CERT, VMWAREXYZ) cannot collide with real
+    // Aria definition IDs, so it must not trigger the collision warning.
+    const reserved = RESERVED_ID_PREFIXES.find(p => upper === p || upper.startsWith(p + "-"));
     if (reserved) {
       msg = 'The definition ID prefix "' + sanitized + '" equals or starts with the reserved prefix "' + reserved +
         '". Generated definition IDs can collide with existing Aria Operations content and ' +
