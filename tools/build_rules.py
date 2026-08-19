@@ -68,7 +68,10 @@ INVERTED_OPERATOR = {
 
 COMPARISON_OPERATORS = {"=", "!=", "<", "<=", ">", ">="}
 
-OP_PATTERN = re.compile(r"^(<=|>=|[=\u2260<\u2264>\u2265])\s*(.+)$", re.DOTALL)
+# `!=` must be matched before the single-char class so ASCII "not equal"
+# cells parse like their `\u2260` spelling instead of falling through to the
+# bare-value branch (which would keep the operator text inside the value).
+OP_PATTERN = re.compile(r"^(<=|>=|!=|[=\u2260<\u2264>\u2265])\s*(.+)$", re.DOTALL)
 NUMERIC_PATTERN = re.compile(r"^-?\d+(\.\d+)?$")
 
 # Timeout rows carry a bare reference value in `strictest_requirement`, but the

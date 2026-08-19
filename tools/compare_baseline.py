@@ -46,17 +46,6 @@ KNOWN_DEVIATIONS = {
         "baseline uses two collector variants ('= false', '= none'); "
         "regex '^(false|none)$' covers both"
     ),
-    "config|security|shell_timeout": (
-        "baseline uses ('= 0.0', '> 900.0'); per the matrix note ('allowed "
-        "range 1-900 s') and the description ('more than 15 minutes') the "
-        "violation is '> 900.0'; the disabled state '= 0.0' is an accepted "
-        "blind spot of the single-condition model"
-    ),
-    "config|security|shell_interactive_timeout": (
-        "baseline uses ('= 0.0', '> 900.0'); per the matrix note ('allowed "
-        "range 1-900 s') the violation is '> 900.0'; the disabled state "
-        "'= 0.0' is an accepted blind spot of the single-condition model"
-    ),
     "config|security|security_account_lock_failures": (
         "baseline encodes the SCG variants as '< 3.0' and '> 3.0' (union == "
         "'!= 3.0') plus the ISO variant '!= 5.0'; strictest value is 3, so the "
